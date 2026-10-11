@@ -14,7 +14,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void TwoFilesStagedForTheSameDestinationDoNotShareATemporaryFile()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String path = folder.Write("a.ini", "old");
 
 			StagedFile first = StagedFile.Write(path, ["first"], Utf8);
@@ -30,7 +30,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void CommittingSeveralFilesReplacesAllOfThemAndTellsEachOne()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String a = folder.Write("a.ini", "old a");
 			String b = folder.Combine("b.ini");
 			List<String> told = [];
@@ -50,7 +50,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void WhenOneReplacementFailsTheOthersGetTheirOldContentBack()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String a = folder.Write("a.ini", "old a");
 			String b = folder.Write("b.ini", "old b");
 			String c = folder.Write("c.ini", "old c");
@@ -78,7 +78,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void AFileThatDidNotExistIsRemovedAgainWhenALaterReplacementFails()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String created = folder.Combine("new.ini");
 			String locked = folder.Write("locked.ini", "old");
 			StagedFile[] staged =
@@ -100,7 +100,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void AReadOnlyDestinationIsRefusedBeforeAnythingIsWritten()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String path = folder.Write("a.ini", "old");
 			File.SetAttributes(path, FileAttributes.ReadOnly);
 
@@ -112,7 +112,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void TheAttributesOfTheReplacedFileAreKept()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String path = folder.Write("a.ini", "old");
 			File.SetAttributes(path, FileAttributes.Hidden | FileAttributes.Archive);
 

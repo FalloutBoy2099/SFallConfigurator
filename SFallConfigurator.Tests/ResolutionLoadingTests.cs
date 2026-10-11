@@ -10,7 +10,7 @@ namespace SFallConfigurator.Tests
 	/// </summary>
 	public sealed class ResolutionLoadingTests : IDisposable
 	{
-		private readonly TestFolder _settings = new TestFolder();
+		private readonly TestFolder _settings = new();
 
 		public ResolutionLoadingTests()
 		{
@@ -30,14 +30,14 @@ namespace SFallConfigurator.Tests
 		[InlineData("1920", "1080", "800", "600", "1")]
 		public void OpeningAGameDoesNotRewriteTheHiResResolution(String sfallWidth, String sfallHeight, String hiResWidth, String hiResHeight, String scale)
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			folder.Write("ddraw.ini", "[Main]\r\nHiResMode=1\r\n[Graphics]\r\nMode=4\r\nGraphicsWidth=" + sfallWidth + "\r\nGraphicsHeight=" + sfallHeight + "\r\n");
 			folder.Write("f2_res.ini", "[MAIN]\r\nSCR_WIDTH=" + hiResWidth + "\r\nSCR_HEIGHT=" + hiResHeight + "\r\nSCALE_2X=" + scale + "\r\n");
 			folder.Write("fallout2.cfg", "[system]\r\nlanguage=english\r\nmaster_patches=data\r\n");
-			GameConfiguration configuration = new GameConfiguration(folder.Path);
+			GameConfiguration configuration = new(folder.Path);
 			configuration.Load();
 
-			MainViewModel viewModel = new MainViewModel(configuration, new TestInteraction(), () => { }, _ => { }, _ => { });
+			MainViewModel viewModel = new(configuration, new TestInteraction(), () => { }, _ => { }, _ => { });
 			viewModel.Load();
 
 			Assert.False(configuration.HasPendingChanges);

@@ -11,6 +11,8 @@
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 		<RootNamespace>SFallConfigurator.Tests</RootNamespace>
 		<NoWarn>$(NoWarn);WPF0001</NoWarn>
+		<AssemblyVersion>2026.10.11.1</AssemblyVersion>
+		<FileVersion>2026.10.11.1</FileVersion>
 	</PropertyGroup>
 
 	<ItemGroup>

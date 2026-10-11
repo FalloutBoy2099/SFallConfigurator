@@ -16,7 +16,7 @@ namespace SFallConfigurator.Tests
 	/// </summary>
 	public sealed class InterfaceTranslationTests : IDisposable
 	{
-		private readonly TestFolder _settings = new TestFolder();
+		private readonly TestFolder _settings = new();
 
 		public InterfaceTranslationTests()
 		{
@@ -33,7 +33,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void EveryTextOfTheInterfaceIsInTheDictionaryOfEveryLanguage()
 		{
-			using TestFolder game = new TestFolder();
+			using TestFolder game = new();
 			game.Write("ddraw.ini", "[Main]\r\nExtraCRC=0x1\r\n");
 			game.Write("f2_res.ini", "[MAIN]\r\nSCR_WIDTH=800\r\n");
 			game.Write("fallout2.cfg", "[system]\r\nlanguage=english\r\nmaster_patches=data\r\n");
@@ -45,9 +45,9 @@ namespace SFallConfigurator.Tests
 				Localizer.Instance.Apply(language.Code);
 				Localizer.ClearUntranslated();
 
-				GameConfiguration configuration = new GameConfiguration(game.Path);
+				GameConfiguration configuration = new(game.Path);
 				configuration.Load();
-				MainViewModel viewModel = new MainViewModel(configuration, new TestInteraction(), () => { }, _ => { }, _ => { });
+				MainViewModel viewModel = new(configuration, new TestInteraction(), () => { }, _ => { }, _ => { });
 				viewModel.Load();
 				Visit(viewModel, new HashSet<Object>(ReferenceEqualityComparer.Instance), 0);
 

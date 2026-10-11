@@ -36,7 +36,8 @@ namespace SFallConfigurator.Services
 		/// </summary>
 		public static IReadOnlyList<ScreenResolution> GetAvailable()
 		{
-			DevMode mode = new DevMode { DmSize = (UInt16)Unsafe.SizeOf<DevMode>() };
+			DevMode mode = new()
+			{ DmSize = (UInt16)Unsafe.SizeOf<DevMode>() };
 			HashSet<ScreenResolution> modes = [];
 
 			for (Int32 index = 0; EnumDisplaySettings(null, index, ref mode); index++)

@@ -12,7 +12,7 @@ namespace SFallConfigurator.Tests
 	/// </summary>
 	public sealed class RecentFoldersTests : IDisposable
 	{
-		private readonly TestFolder _settings = new TestFolder();
+		private readonly TestFolder _settings = new();
 
 		public RecentFoldersTests()
 		{
@@ -36,7 +36,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void RemembersGameFoldersMostRecentFirst()
 		{
-			using TestFolder games = new TestFolder();
+			using TestFolder games = new();
 			String first = CreateGame(games, "one");
 			String second = CreateGame(games, "two");
 
@@ -49,7 +49,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void OpeningAFolderAgainMovesItToTheTopWithoutDuplicate()
 		{
-			using TestFolder games = new TestFolder();
+			using TestFolder games = new();
 			String first = CreateGame(games, "one");
 			String second = CreateGame(games, "two");
 
@@ -63,7 +63,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void OnlyTheTenLastFoldersAreKept()
 		{
-			using TestFolder games = new TestFolder();
+			using TestFolder games = new();
 			String[] folders = Enumerable.Range(1, 12).Select(index => CreateGame(games, "game" + index)).ToArray();
 
 			foreach (String folder in folders)
@@ -80,7 +80,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void FoldersWithoutAGameAreNotRemembered()
 		{
-			using TestFolder games = new TestFolder();
+			using TestFolder games = new();
 			String empty = games.Combine("empty");
 			Directory.CreateDirectory(empty);
 
@@ -92,7 +92,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void DeletedFoldersDisappearFromTheList()
 		{
-			using TestFolder games = new TestFolder();
+			using TestFolder games = new();
 			String kept = CreateGame(games, "kept");
 			String gone = CreateGame(games, "gone");
 			GameLocator.RememberGamePath(kept);
@@ -106,7 +106,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void TheMostRecentFolderIsOpenedWhenTheProgramIsNotInAGameFolder()
 		{
-			using TestFolder games = new TestFolder();
+			using TestFolder games = new();
 			String game = CreateGame(games, "game");
 			GameLocator.RememberGamePath(game);
 

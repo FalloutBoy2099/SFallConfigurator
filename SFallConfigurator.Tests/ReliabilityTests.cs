@@ -18,7 +18,7 @@ namespace SFallConfigurator.Tests
 	/// </summary>
 	public sealed class ReliabilityTests : IDisposable
 	{
-		private readonly TestFolder _settings = new TestFolder();
+		private readonly TestFolder _settings = new();
 
 		public ReliabilityTests()
 		{
@@ -33,16 +33,16 @@ namespace SFallConfigurator.Tests
 
 		private static MainViewModel Open(TestFolder folder, TestInteraction interaction)
 		{
-			GameConfiguration configuration = new GameConfiguration(folder.Path);
+			GameConfiguration configuration = new(folder.Path);
 			configuration.Load();
-			MainViewModel viewModel = new MainViewModel(configuration, interaction, () => { }, _ => { }, _ => { });
+			MainViewModel viewModel = new(configuration, interaction, () => { }, _ => { }, _ => { });
 			viewModel.Load();
 			return viewModel;
 		}
 
 		private static TestFolder CreateGame()
 		{
-			TestFolder folder = new TestFolder();
+			TestFolder folder = new();
 			folder.Write("ddraw.ini", "[Main]\r\nExtraCRC=0x1\r\n");
 			folder.Write("fallout2.cfg", "[system]\r\nlanguage=english\r\nmaster_patches=data\r\n");
 			return folder;
@@ -57,7 +57,8 @@ namespace SFallConfigurator.Tests
 			String order = folder.Write("mods/mods_order.ini", "first.dat=1\r\n");
 			folder.Write("mods/first.dat", "x");
 			String cfg = folder.Combine("fallout2.cfg");
-			TestInteraction interaction = new TestInteraction { SaveAnswer = true };
+			TestInteraction interaction = new()
+			{ SaveAnswer = true };
 			MainViewModel viewModel = Open(folder, interaction);
 
 			viewModel.Mods.Mods[0].IsEnabled = false;
@@ -102,7 +103,8 @@ namespace SFallConfigurator.Tests
 		public void ClosingAsksWhatToDoWithTheChanges(Boolean? answer, Boolean closes, Int32 questions)
 		{
 			using TestFolder folder = CreateGame();
-			TestInteraction interaction = new TestInteraction { SaveAnswer = answer };
+			TestInteraction interaction = new()
+			{ SaveAnswer = answer };
 			MainViewModel viewModel = Open(folder, interaction);
 			Assert.True(viewModel.Configuration.GameCfgSource.Write("system", "language", "french"));
 
@@ -118,7 +120,7 @@ namespace SFallConfigurator.Tests
 		public void ClosingWithoutChangesAsksNothing()
 		{
 			using TestFolder folder = CreateGame();
-			TestInteraction interaction = new TestInteraction();
+			TestInteraction interaction = new();
 			MainViewModel viewModel = Open(folder, interaction);
 
 			Assert.True(viewModel.ConfirmClose());
@@ -129,7 +131,7 @@ namespace SFallConfigurator.Tests
 		public void ChoosingTheMainIniAsTheSfallFileLeavesASingleDocument()
 		{
 			using TestFolder folder = CreateGame();
-			GameConfiguration configuration = new GameConfiguration(folder.Path);
+			GameConfiguration configuration = new(folder.Path);
 			configuration.Load();
 
 			configuration.SetCustomSfallFile(folder.Combine("ddraw.ini"));
@@ -168,7 +170,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void AFileErrorIsShownInsteadOfEndingTheProgram()
 		{
-			TestInteraction interaction = new TestInteraction();
+			TestInteraction interaction = new();
 
 			Boolean ok = ErrorGuard.Run(interaction, () => throw new IOException("the disk is full"), "Save error");
 
@@ -179,7 +181,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void AFailureOfTheProgramItselfIsNotHidden()
 		{
-			TestInteraction interaction = new TestInteraction();
+			TestInteraction interaction = new();
 
 			Assert.Throws<InvalidOperationException>(() => ErrorGuard.Run(interaction, () => throw new InvalidOperationException("a defect")));
 			Assert.Empty(interaction.Errors);
@@ -205,7 +207,7 @@ namespace SFallConfigurator.Tests
 		{
 			using TestFolder folder = CreateGame();
 			folder.Write("mods/first.dat", "x");
-			TestInteraction interaction = new TestInteraction();
+			TestInteraction interaction = new();
 			MainViewModel viewModel = Open(folder, interaction);
 			String order = folder.Combine("mods/mods_order.ini");
 			Directory.CreateDirectory(order);
@@ -242,7 +244,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void TheInstallSwitchIsAnArgumentOfItsOwn()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 
 			Assert.Null(InstallMode.TryRun(folder.Path, ["--game", "D:\\my-install dir"]));
 			Assert.Null(InstallMode.TryRun(folder.Path, ["--game=D:\\my-install dir"]));
@@ -319,7 +321,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void TheOriginalExecutableIsKeptBeforeItIsPatchedForTheFirstTime()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String exe = CreateExecutable(folder);
 			Byte[] original = File.ReadAllBytes(exe);
 
@@ -333,7 +335,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void TheCopyOfTheOriginalIsNotReplacedByALaterPatchedState()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String exe = CreateExecutable(folder);
 			Byte[] original = File.ReadAllBytes(exe);
 			Assert.True(ExePatcher.SetSfallDll(exe, enable: true));
@@ -347,7 +349,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void AnExecutableThatCannotBeWrittenIsLeftAsItWas()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String exe = CreateExecutable(folder);
 			Byte[] original = File.ReadAllBytes(exe);
 			File.SetAttributes(exe, FileAttributes.ReadOnly);

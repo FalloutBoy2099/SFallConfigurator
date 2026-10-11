@@ -86,7 +86,7 @@ namespace SFallConfigurator.Dat
 
 		public static DatArchive Open(String path, Boolean writable)
 		{
-			FileStream stream = new FileStream(
+			FileStream stream = new(
 				path,
 				FileMode.Open,
 				writable ? FileAccess.ReadWrite : FileAccess.Read,
@@ -94,7 +94,7 @@ namespace SFallConfigurator.Dat
 
 			try
 			{
-				DatArchive archive = new DatArchive(stream);
+				DatArchive archive = new(stream);
 				archive.ReadDirectory();
 				return archive;
 			}
@@ -143,9 +143,9 @@ namespace SFallConfigurator.Dat
 		{
 			try
 			{
-				using MemoryStream source = new MemoryStream(stored);
-				using ZLibStream zlib = new ZLibStream(source, CompressionMode.Decompress);
-				using MemoryStream output = new MemoryStream();
+				using MemoryStream source = new(stored);
+				using ZLibStream zlib = new(source, CompressionMode.Decompress);
+				using MemoryStream output = new();
 				Byte[] buffer = new Byte[81920];
 				Int64 remaining = expectedSize;
 				while (true)
@@ -268,7 +268,7 @@ namespace SFallConfigurator.Dat
 
 			_entries.Sort((left, right) => String.CompareOrdinal(left.Path.ToLowerInvariant(), right.Path.ToLowerInvariant()));
 
-			using (BinaryWriter writer = new BinaryWriter(_stream, Encoding.Latin1, leaveOpen: true))
+			using (BinaryWriter writer = new(_stream, Encoding.Latin1, leaveOpen: true))
 			{
 				writer.Write(_entries.Count);
 				Int64 entriesStart = _stream.Position;
@@ -306,8 +306,8 @@ namespace SFallConfigurator.Dat
 		{
 			Byte[] data = entry.PendingData!;
 
-			using MemoryStream compressed = new MemoryStream();
-			using (ZLibStream zlib = new ZLibStream(compressed, CompressionLevel.SmallestSize, leaveOpen: true))
+			using MemoryStream compressed = new();
+			using (ZLibStream zlib = new(compressed, CompressionLevel.SmallestSize, leaveOpen: true))
 			{
 				zlib.Write(data, 0, data.Length);
 			}
@@ -332,7 +332,7 @@ namespace SFallConfigurator.Dat
 				throw new DatFormatException(Localizer.T("The DAT file is too small."));
 			}
 
-			using BinaryReader reader = new BinaryReader(_stream, Encoding.Latin1, leaveOpen: true);
+			using BinaryReader reader = new(_stream, Encoding.Latin1, leaveOpen: true);
 
 			_stream.Seek(-FooterSize, SeekOrigin.End);
 			_treeSize = reader.ReadInt32();

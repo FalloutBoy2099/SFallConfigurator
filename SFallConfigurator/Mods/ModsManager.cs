@@ -99,7 +99,7 @@ namespace SFallConfigurator.Mods
 				return null;
 			}
 
-			List<String> output = new List<String>(_lines.Count);
+			List<String> output = new(_lines.Count);
 			Int32 slot = 0;
 			foreach (String? line in _lines)
 			{
@@ -138,7 +138,7 @@ namespace SFallConfigurator.Mods
 			{
 				foreach (String name in AvailableMods)
 				{
-					ModEntry mod = new ModEntry(name, isEnabled: true, isMissing: false);
+					ModEntry mod = new(name, isEnabled: true, isMissing: false);
 					_lines.Add(null);
 					Track(mod);
 					Mods.Add(mod);
@@ -164,7 +164,7 @@ namespace SFallConfigurator.Mods
 
 			index = Math.Clamp(index, 0, Mods.Count);
 
-			ModEntry mod = new ModEntry(name, isEnabled: true, isMissing: false);
+			ModEntry mod = new(name, isEnabled: true, isMissing: false);
 			Int32 lineIndex = index < Mods.Count ? FindSlotLine(index) : _lines.Count;
 			_lines.Insert(lineIndex, null);
 			Track(mod);

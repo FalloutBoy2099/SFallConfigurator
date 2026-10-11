@@ -81,7 +81,7 @@ namespace SFallConfigurator.ViewModels
 			});
 
 			// The option is always available: when sfall-mods.ini has no active AmmoFile line, writing adds it (a commented example stays as it is).
-			OptionLocation ammoFileLocation = new OptionLocation(new DocumentSource(() => configuration.SfallMods, IniWriteMode.AddIfMissing), "Misc");
+			OptionLocation ammoFileLocation = new(new DocumentSource(() => configuration.SfallMods, IniWriteMode.AddIfMissing), "Misc");
 			_ammoFile = Add(new TextOption(ammoFileLocation, "AmmoFile", "Ammo File") { DefaultValue = String.Empty });
 			_damageFormula.PropertyChanged += (_, e) =>
 			{

@@ -16,7 +16,7 @@ namespace SFallConfigurator.Tests
 		private static void WriteDat(String path, params (String Name, Byte[] Data, Boolean Compress)[] files)
 		{
 			using FileStream stream = File.Create(path);
-			using BinaryWriter writer = new BinaryWriter(stream, Encoding.Latin1);
+			using BinaryWriter writer = new(stream, Encoding.Latin1);
 
 			(String Name, Int32 Unpacked, Int32 Packed, Boolean Compressed, UInt32 Offset)[] entries = new (String, Int32, Int32, Boolean, UInt32)[files.Length];
 			for (Int32 index = 0; index < files.Length; index++)
@@ -24,8 +24,8 @@ namespace SFallConfigurator.Tests
 				Byte[] stored = files[index].Data;
 				if (files[index].Compress)
 				{
-					using MemoryStream packed = new MemoryStream();
-					using (ZLibStream zlib = new ZLibStream(packed, CompressionLevel.Optimal, leaveOpen: true))
+					using MemoryStream packed = new();
+					using (ZLibStream zlib = new(packed, CompressionLevel.Optimal, leaveOpen: true))
 					{
 						zlib.Write(stored, 0, stored.Length);
 					}
@@ -56,7 +56,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void ReadsCompressedAndStoredFiles()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String path = folder.Combine("test.dat");
 			Byte[] big = Encoding.ASCII.GetBytes(new String('A', 5000));
 			WriteDat(path, ("art\\a.frm", big, true), ("text\\b.msg", Encoding.ASCII.GetBytes("hello"), false));
@@ -72,7 +72,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void RejectsFilesThatAreNotFallout2Archives()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String path = folder.Write("junk.dat", "this is not an archive at all");
 
 			Assert.Throws<DatFormatException>(() => DatArchive.Open(path, writable: false));
@@ -81,7 +81,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void SavedChangesKeepExistingFilesAndAreReadBack()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String path = folder.Combine("test.dat");
 			Byte[] big = new Byte[3000];
 			new Random(1).NextBytes(big);
@@ -106,7 +106,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void ReplacingAFileKeepsASingleEntry()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String path = folder.Combine("test.dat");
 			WriteDat(path, ("desc.id", Encoding.ASCII.GetBytes("a\r\nold"), false));
 
@@ -147,7 +147,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void DescriptionRoundTrips()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String path = folder.Combine("mod.dat");
 			WriteDat(path, ("x.txt", Encoding.ASCII.GetBytes("x"), false));
 

@@ -11,7 +11,7 @@ namespace SFallConfigurator.Configuration
 	/// </summary>
 	internal static partial class TextEncodings
 	{
-		private static readonly Lazy<Encoding> AnsiEncoding = new Lazy<Encoding>(CreateAnsiEncoding);
+		private static readonly Lazy<Encoding> AnsiEncoding = new(CreateAnsiEncoding);
 
 		/// <summary>
 		/// System ANSI code page (for example 1251 on a Russian system).
@@ -27,7 +27,7 @@ namespace SFallConfigurator.Configuration
 		/// </summary>
 		public static Encoding DetectFileEncoding(String path)
 		{
-			using FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+			using FileStream stream = new(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 			Byte[] content = new Byte[stream.Length];
 			stream.ReadExactly(content, 0, content.Length);
 			return DetectEncoding(content);

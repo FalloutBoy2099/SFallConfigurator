@@ -10,7 +10,7 @@ namespace SFallConfigurator.Tests
 	{
 		private static (IniDocument Document, OptionLocation Location) Create(params String[] lines)
 		{
-			IniDocument document = new IniDocument("test.ini", lines, System.Text.Encoding.UTF8);
+			IniDocument document = new("test.ini", lines, System.Text.Encoding.UTF8);
 			return (document, new OptionLocation(new DocumentSource(() => document, IniWriteMode.UpdateExisting)));
 		}
 
@@ -18,7 +18,7 @@ namespace SFallConfigurator.Tests
 		public void BoolOptionReadsAndWritesZeroOrOne()
 		{
 			(IniDocument ini, OptionLocation location) = Create("[Misc]", "Flag=1");
-			BoolOption option = new BoolOption(location, "Flag", "Flag");
+			BoolOption option = new(location, "Flag", "Flag");
 
 			option.Load();
 			Assert.True(option.IsAvailable);
@@ -37,7 +37,7 @@ namespace SFallConfigurator.Tests
 		public void MissingKeyMakesTheOptionUnavailableAndNothingIsWritten()
 		{
 			(IniDocument ini, OptionLocation location) = Create("[Misc]", "Other=1");
-			BoolOption option = new BoolOption(location, "Flag", "Flag");
+			BoolOption option = new(location, "Flag", "Flag");
 
 			option.Load();
 
@@ -51,7 +51,7 @@ namespace SFallConfigurator.Tests
 		public void LoadingNeverWritesToTheFile()
 		{
 			(IniDocument ini, OptionLocation location) = Create("Flag=2");
-			BoolOption option = new BoolOption(location, "Flag", "Flag") { TrueValue = "1" };
+			BoolOption option = new(location, "Flag", "Flag") { TrueValue = "1" };
 
 			option.Load();
 
@@ -64,7 +64,7 @@ namespace SFallConfigurator.Tests
 		public void BoolOptionWithCustomValuesIsInterpretedAndStoredCustomly()
 		{
 			(IniDocument ini, OptionLocation location) = Create("Fade=100");
-			BoolOption option = new BoolOption(location, "Fade", "Fade")
+			BoolOption option = new(location, "Fade", "Fade")
 			{
 				TrueValue = "50",
 				FalseValue = "100",
@@ -82,8 +82,8 @@ namespace SFallConfigurator.Tests
 		public void OptionIsEnabledOnlyWhileItsConditionHolds()
 		{
 			(_, OptionLocation location) = Create("Master=1", "Slave=1");
-			BoolOption master = new BoolOption(location, "Master", "Master");
-			BoolOption slave = new BoolOption(location, "Slave", "Slave");
+			BoolOption master = new(location, "Master", "Master");
+			BoolOption slave = new(location, "Slave", "Slave");
 			slave.EnableWhen(() => master.Value == true, master);
 			master.Load();
 			slave.Load();
@@ -102,7 +102,7 @@ namespace SFallConfigurator.Tests
 		public void NumberOptionClampsToItsRange()
 		{
 			(IniDocument ini, OptionLocation location) = Create("Count=7");
-			NumberOption option = new NumberOption(location, "Count", "Count", 1, 10);
+			NumberOption option = new(location, "Count", "Count", 1, 10);
 			option.Load();
 
 			Assert.Equal(7, option.Value);
@@ -119,8 +119,8 @@ namespace SFallConfigurator.Tests
 		public void NumberOptionReadsHexadecimalAndUsesTheDefaultWhenMissing()
 		{
 			(_, OptionLocation location) = Create("Code=0x10");
-			NumberOption hex = new NumberOption(location, "Code", "Code", 0, 100);
-			NumberOption missing = new NumberOption(location, "Nothing", "Nothing", 0, 100) { DefaultValue = "42" };
+			NumberOption hex = new(location, "Code", "Code", 0, 100);
+			NumberOption missing = new(location, "Nothing", "Nothing", 0, 100) { DefaultValue = "42" };
 
 			hex.Load();
 			missing.Load();
@@ -134,7 +134,7 @@ namespace SFallConfigurator.Tests
 		public void ChoiceOptionMapsValuesToItems()
 		{
 			(IniDocument ini, OptionLocation location) = Create("Filter=3");
-			ChoiceOption option = new ChoiceOption(location, "Filter", "Filter", ["Low", "Mid", "High"]) { Values = ["1", "2", "3"] };
+			ChoiceOption option = new(location, "Filter", "Filter", ["Low", "Mid", "High"]) { Values = ["1", "2", "3"] };
 
 			option.Load();
 			Assert.Equal(2, option.SelectedIndex);
@@ -148,7 +148,7 @@ namespace SFallConfigurator.Tests
 		public void ChoiceOptionFallsBackToTheFirstItemForUnknownValues()
 		{
 			(_, OptionLocation location) = Create("Filter=9");
-			ChoiceOption option = new ChoiceOption(location, "Filter", "Filter", ["A", "B"]);
+			ChoiceOption option = new(location, "Filter", "Filter", ["A", "B"]);
 
 			option.Load();
 
@@ -159,7 +159,7 @@ namespace SFallConfigurator.Tests
 		public void KeyOptionStoresZeroWhenUnchecked()
 		{
 			(IniDocument ini, OptionLocation location) = Create("Key=42");
-			KeyOption option = new KeyOption(location, "Key", "Key", 29, new TestInteraction());
+			KeyOption option = new(location, "Key", "Key", 29, new TestInteraction());
 			option.Load();
 
 			Assert.True(option.IsChecked);
@@ -178,7 +178,7 @@ namespace SFallConfigurator.Tests
 		public void KeyOptionKeepsTheDefaultKeyWhileDisabledInTheFile()
 		{
 			(_, OptionLocation location) = Create("Key=0");
-			KeyOption option = new KeyOption(location, "Key", "Key", 29, new TestInteraction());
+			KeyOption option = new(location, "Key", "Key", 29, new TestInteraction());
 
 			option.Load();
 
@@ -191,8 +191,9 @@ namespace SFallConfigurator.Tests
 		public void ChoosingAKeyStoresIt()
 		{
 			(IniDocument ini, OptionLocation location) = Create("Key=29");
-			TestInteraction interaction = new TestInteraction { KeyToPick = 17 };
-			KeyOption option = new KeyOption(location, "Key", "Key", 29, interaction);
+			TestInteraction interaction = new()
+			{ KeyToPick = 17 };
+			KeyOption option = new(location, "Key", "Key", 29, interaction);
 			option.Load();
 
 			option.ChooseKeyCommand.Execute(null);
@@ -205,9 +206,10 @@ namespace SFallConfigurator.Tests
 		public void ModifierKeysAreOnlyAcceptedWhenAllowed()
 		{
 			(IniDocument ini, OptionLocation location) = Create("Scroll=0");
-			TestInteraction interaction = new TestInteraction { KeyToPick = -2 };
-			KeyOption plain = new KeyOption(location, "Scroll", "Scroll", 0, interaction) { HasToggle = false };
-			KeyOption modifiers = new KeyOption(location, "Scroll", "Scroll", 0, interaction) { HasToggle = false, AllowModifiers = true };
+			TestInteraction interaction = new()
+			{ KeyToPick = -2 };
+			KeyOption plain = new(location, "Scroll", "Scroll", 0, interaction) { HasToggle = false };
+			KeyOption modifiers = new(location, "Scroll", "Scroll", 0, interaction) { HasToggle = false, AllowModifiers = true };
 			plain.Load();
 			modifiers.Load();
 
@@ -223,7 +225,7 @@ namespace SFallConfigurator.Tests
 		public void TextOptionTrimsAndNormalizesWhatItStores()
 		{
 			(IniDocument ini, OptionLocation location) = Create("Path=Data");
-			TextOption option = new TextOption(location, "Path", "Path") { Normalize = text => text.ToLowerInvariant() };
+			TextOption option = new(location, "Path", "Path") { Normalize = text => text.ToLowerInvariant() };
 			option.Load();
 
 			option.Text = "  NewFolder ";
@@ -235,7 +237,7 @@ namespace SFallConfigurator.Tests
 		public void FixedTextIsShownButNeverStored()
 		{
 			(IniDocument ini, OptionLocation location) = Create("File=mine.ini");
-			TextOption option = new TextOption(location, "File", "File");
+			TextOption option = new(location, "File", "File");
 			option.Load();
 
 			option.ShowFixed("Imposed.ini", readOnly: true);
@@ -249,7 +251,7 @@ namespace SFallConfigurator.Tests
 		public void BarArtOptionMapsPicturesToPresets()
 		{
 			(IniDocument ini, OptionLocation location) = Create("Art=2");
-			BarArtOption option = new BarArtOption(location, "Art", "Art");
+			BarArtOption option = new(location, "Art", "Art");
 			option.Load();
 
 			Assert.Equal(2, option.PresetIndex);
@@ -267,7 +269,7 @@ namespace SFallConfigurator.Tests
 		public void WindowModeOptionUsesTwoKeys()
 		{
 			(IniDocument ini, OptionLocation location) = Create("WINDOWED=1", "WINDOWED_FULLSCREEN=1");
-			WindowModeOption option = new WindowModeOption(location, "Window Mode");
+			WindowModeOption option = new(location, "Window Mode");
 			option.Load();
 
 			Assert.Equal(2, option.SelectedIndex);

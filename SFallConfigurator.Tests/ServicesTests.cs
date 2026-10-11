@@ -47,7 +47,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void ChecksumListRecognizesHexWithAndWithoutPrefix()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String exe = folder.Combine("game.exe");
 			File.WriteAllBytes(exe, Encoding.ASCII.GetBytes("not really an executable"));
 			String hex = ExeChecksum.ComputeHex(exe);
@@ -78,7 +78,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void PatcherRecognizesAFallout2Executable()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 
 			Assert.True(ExePatcher.IsValid(CreateFakeExecutable(folder, valid: true)));
 			Assert.False(ExePatcher.IsValid(CreateFakeExecutable(folder, valid: false)));
@@ -88,7 +88,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void HiResPatchCanBeEnabledAndDisabled()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String exe = CreateFakeExecutable(folder, valid: true);
 
 			Assert.False(ExePatcher.IsHiResPatchEnabled(exe));
@@ -101,7 +101,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void SfallDllNameCanBeSwitched()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String exe = CreateFakeExecutable(folder, valid: true);
 
 			Assert.Equal(DllPatchState.Original, ExePatcher.GetSfallDllState(exe));
@@ -115,7 +115,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void PatcherRefusesAnotherExecutable()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String exe = CreateFakeExecutable(folder, valid: false);
 
 			Assert.False(ExePatcher.SetHiResPatch(exe, enable: true));

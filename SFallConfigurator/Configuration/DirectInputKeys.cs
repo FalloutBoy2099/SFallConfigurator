@@ -173,7 +173,7 @@ namespace SFallConfigurator.Configuration
 
 		private static Dictionary<Int32, KeyInfo> BuildLookup()
 		{
-			Dictionary<Int32, KeyInfo> lookup = new Dictionary<Int32, KeyInfo>();
+			Dictionary<Int32, KeyInfo> lookup = new();
 			foreach (KeyInfo key in Keys)
 			{
 				lookup[key.Code] = key;

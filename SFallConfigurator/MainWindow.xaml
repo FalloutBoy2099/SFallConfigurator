@@ -1,231 +1,273 @@
-<Window x:Class="SFallConfigurator.MainWindow"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:loc="clr-namespace:SFallConfigurator.Localization"
-	xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
-	xmlns:views="clr-namespace:SFallConfigurator.Views"
-	Title="{Binding Title}"
-	Width="620"
-	Height="650"
-	MinWidth="540"
-	MinHeight="480"
-	Icon="pack://application:,,,/Resources/icon.ico"
-	FontSize="12"
-	Closing="OnClosing"
-	StateChanged="OnStateChanged"
-	ContentRendered="OnContentRendered">
-	<Window.Resources>
-		<!-- Compact versions of the Fluent controls: the original configurator was a small, dense window -->
-		<Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-			<Setter Property="Padding" Value="10,2" />
-			<Setter Property="MinHeight" Value="24" />
-		</Style>
-		<Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-			<Setter Property="Padding" Value="6,2" />
-			<Setter Property="MinHeight" Value="24" />
-		</Style>
-		<Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
-			<Setter Property="Padding" Value="8,2" />
-			<Setter Property="MinHeight" Value="24" />
-		</Style>
-		<Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
-			<Setter Property="MinHeight" Value="20" />
-			<Setter Property="VerticalContentAlignment" Value="Center" />
-			<Setter Property="Padding" Value="6,0,0,0" />
-		</Style>
-		<Style TargetType="RadioButton" BasedOn="{StaticResource {x:Type RadioButton}}">
-			<Setter Property="MinHeight" Value="20" />
-			<Setter Property="VerticalContentAlignment" Value="Center" />
-			<Setter Property="Padding" Value="6,0,0,0" />
-		</Style>
-		<Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
-			<Setter Property="Padding" Value="8,2" />
-			<Setter Property="MinHeight" Value="22" />
-			<Setter Property="FontSize" Value="12" />
-		</Style>
-		<Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-			<Setter Property="Padding" Value="6,2" />
-			<Setter Property="MinHeight" Value="22" />
-		</Style>
-		<Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
-			<Setter Property="Padding" Value="4,1" />
-			<Setter Property="MinHeight" Value="22" />
-		</Style>
+<Window
+    x:Class="SFallConfigurator.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:loc="clr-namespace:SFallConfigurator.Localization"
+    xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+    xmlns:views="clr-namespace:SFallConfigurator.Views"
+    Title="{Binding Title}"
+    Width="620"
+    Height="650"
+    MinWidth="540"
+    MinHeight="480"
+    Closing="OnClosing"
+    ContentRendered="OnContentRendered"
+    FontSize="12"
+    Icon="pack://application:,,,/Resources/icon.ico"
+    StateChanged="OnStateChanged">
 
-		<!-- Buttons of the title bar -->
-		<Style x:Key="CaptionButtonStyle" TargetType="Button">
-			<Setter Property="Width" Value="46" />
-			<Setter Property="Focusable" Value="False" />
-			<Setter Property="FontFamily" Value="{DynamicResource SymbolThemeFontFamily}" />
-			<Setter Property="FontSize" Value="10" />
-			<Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-			<Setter Property="shell:WindowChrome.IsHitTestVisibleInChrome" Value="True" />
-			<Setter Property="Template">
-				<Setter.Value>
-					<ControlTemplate TargetType="Button">
-						<Border x:Name="Chrome" Background="Transparent">
-							<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-						</Border>
-						<ControlTemplate.Triggers>
-							<Trigger Property="IsMouseOver" Value="True">
-								<Setter TargetName="Chrome" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
-							</Trigger>
-							<Trigger Property="IsPressed" Value="True">
-								<Setter TargetName="Chrome" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
-							</Trigger>
-						</ControlTemplate.Triggers>
-					</ControlTemplate>
-				</Setter.Value>
-			</Setter>
-		</Style>
-		<Style x:Key="CloseButtonStyle" TargetType="Button" BasedOn="{StaticResource CaptionButtonStyle}">
-			<Setter Property="Template">
-				<Setter.Value>
-					<ControlTemplate TargetType="Button">
-						<Border x:Name="Chrome" Background="Transparent">
-							<ContentPresenter x:Name="Glyph" HorizontalAlignment="Center" VerticalAlignment="Center" />
-						</Border>
-						<ControlTemplate.Triggers>
-							<Trigger Property="IsMouseOver" Value="True">
-								<Setter TargetName="Chrome" Property="Background" Value="#C42B1C" />
-								<Setter Property="Foreground" Value="White" />
-							</Trigger>
-							<Trigger Property="IsPressed" Value="True">
-								<Setter TargetName="Chrome" Property="Background" Value="#B22A1B" />
-								<Setter Property="Foreground" Value="White" />
-							</Trigger>
-						</ControlTemplate.Triggers>
-					</ControlTemplate>
-				</Setter.Value>
-			</Setter>
-		</Style>
-	</Window.Resources>
+    <Window.Resources>
+        <!--  Compact versions of the Fluent controls: the original configurator was a small, dense window  -->
+        <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
+            <Setter Property="Padding" Value="10,2" />
+            <Setter Property="MinHeight" Value="24" />
+        </Style>
+        <Style BasedOn="{StaticResource {x:Type TextBox}}" TargetType="TextBox">
+            <Setter Property="Padding" Value="6,2" />
+            <Setter Property="MinHeight" Value="24" />
+        </Style>
+        <Style BasedOn="{StaticResource {x:Type ComboBox}}" TargetType="ComboBox">
+            <Setter Property="Padding" Value="8,2" />
+            <Setter Property="MinHeight" Value="24" />
+        </Style>
+        <Style BasedOn="{StaticResource {x:Type CheckBox}}" TargetType="CheckBox">
+            <Setter Property="MinHeight" Value="20" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Padding" Value="6,0,0,0" />
+        </Style>
+        <Style BasedOn="{StaticResource {x:Type RadioButton}}" TargetType="RadioButton">
+            <Setter Property="MinHeight" Value="20" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Padding" Value="6,0,0,0" />
+        </Style>
+        <Style BasedOn="{StaticResource {x:Type TabItem}}" TargetType="TabItem">
+            <Setter Property="Padding" Value="8,2" />
+            <Setter Property="MinHeight" Value="22" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+        <Style BasedOn="{StaticResource {x:Type ListBoxItem}}" TargetType="ListBoxItem">
+            <Setter Property="Padding" Value="6,2" />
+            <Setter Property="MinHeight" Value="22" />
+        </Style>
+        <Style BasedOn="{StaticResource {x:Type ListViewItem}}" TargetType="ListViewItem">
+            <Setter Property="Padding" Value="4,1" />
+            <Setter Property="MinHeight" Value="22" />
+        </Style>
 
-	<shell:WindowChrome.WindowChrome>
-		<shell:WindowChrome CaptionHeight="32"
-			ResizeBorderThickness="6"
-			GlassFrameThickness="0"
-			CornerRadius="0"
-			UseAeroCaptionButtons="False" />
-	</shell:WindowChrome.WindowChrome>
+        <!--  Buttons of the title bar  -->
+        <Style x:Key="CaptionButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="46" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="FontFamily" Value="{DynamicResource SymbolThemeFontFamily}" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+            <Setter Property="shell:WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Chrome" Background="Transparent">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style
+            x:Key="CloseButtonStyle"
+            BasedOn="{StaticResource CaptionButtonStyle}"
+            TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Chrome" Background="Transparent">
+                            <ContentPresenter
+                                x:Name="Glyph"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="#C42B1C" />
+                                <Setter Property="Foreground" Value="White" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="#B22A1B" />
+                                <Setter Property="Foreground" Value="White" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
 
-	<Grid x:Name="Frame">
-		<Grid.RowDefinitions>
-			<RowDefinition Height="32" />
-			<RowDefinition Height="*" />
-		</Grid.RowDefinitions>
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome
+            CaptionHeight="32"
+            CornerRadius="0"
+            GlassFrameThickness="0"
+            ResizeBorderThickness="6"
+            UseAeroCaptionButtons="False" />
+    </shell:WindowChrome.WindowChrome>
 
-		<!-- Title bar in the theme of the application -->
-		<Grid Background="{DynamicResource LayerFillColorDefaultBrush}">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="Auto" />
-				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="Auto" />
-			</Grid.ColumnDefinitions>
-			<Image Source="pack://application:,,,/Resources/icon.ico" Width="16" Height="16" Margin="10,0,8,0" />
-			<TextBlock Grid.Column="1"
-				Text="{Binding Title}"
-				VerticalAlignment="Center"
-				TextTrimming="CharacterEllipsis"
-				Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
-			<StackPanel Grid.Column="2" Orientation="Horizontal">
-				<Button x:Name="ThemeButton"
-					Style="{StaticResource CaptionButtonStyle}"
-					Content="&#xE790;"
-					FontSize="14"
-					Click="OnThemeButtonClick"
-					ToolTip="{loc:T 'Theme'}" />
-				<Button x:Name="LanguageButton"
-					Style="{StaticResource CaptionButtonStyle}"
-					Content="&#xE774;"
-					FontSize="14"
-					Click="OnLanguageButtonClick"
-					ToolTip="{loc:T 'Language of the interface'}" />
-				<Button Style="{StaticResource CaptionButtonStyle}" Content="&#xE921;" Click="OnMinimizeClick" />
-				<Button x:Name="MaximizeButton" Style="{StaticResource CaptionButtonStyle}" Content="&#xE922;" Click="OnMaximizeClick" />
-				<Button Style="{StaticResource CloseButtonStyle}" Content="&#xE8BB;" Click="OnCloseClick" />
-			</StackPanel>
-		</Grid>
+    <Grid x:Name="Frame">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-		<Grid Grid.Row="1" Margin="8,6,8,8">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="*" />
-				<RowDefinition Height="Auto" />
-			</Grid.RowDefinitions>
+        <!--  Title bar in the theme of the application  -->
+        <Grid Background="{DynamicResource LayerFillColorDefaultBrush}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Image
+                Width="16"
+                Height="16"
+                Margin="10,0,8,0"
+                Source="pack://application:,,,/Resources/icon.ico" />
+            <TextBlock
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                Text="{Binding Title}"
+                TextTrimming="CharacterEllipsis" />
+            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <Button
+                    x:Name="ThemeButton"
+                    Click="OnThemeButtonClick"
+                    Content="&#xE790;"
+                    FontSize="14"
+                    Style="{StaticResource CaptionButtonStyle}"
+                    ToolTip="{loc:T 'Theme'}" />
+                <Button
+                    x:Name="LanguageButton"
+                    Click="OnLanguageButtonClick"
+                    Content="&#xE774;"
+                    FontSize="14"
+                    Style="{StaticResource CaptionButtonStyle}"
+                    ToolTip="{loc:T 'Language of the interface'}" />
+                <Button
+                    Click="OnMinimizeClick"
+                    Content="&#xE921;"
+                    Style="{StaticResource CaptionButtonStyle}" />
+                <Button
+                    x:Name="MaximizeButton"
+                    Click="OnMaximizeClick"
+                    Content="&#xE922;"
+                    Style="{StaticResource CaptionButtonStyle}" />
+                <Button
+                    Click="OnCloseClick"
+                    Content="&#xE8BB;"
+                    Style="{StaticResource CloseButtonStyle}" />
+            </StackPanel>
+        </Grid>
 
-			<!-- The game folder the configurator works on -->
-			<Grid Margin="0,0,0,10">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="Auto" />
-					<ColumnDefinition Width="*" />
-					<ColumnDefinition Width="Auto" />
-				</Grid.ColumnDefinitions>
-				<TextBlock Text="{loc:T 'Game folder:'}" VerticalAlignment="Center" Margin="0,0,10,0" />
-				<ComboBox Grid.Column="1"
-					HorizontalAlignment="Stretch"
-					ItemsSource="{Binding RecentGameFolders}"
-					SelectedItem="{Binding SelectedGameFolder}"
-					ToolTip="{loc:T 'The folder that holds the game and the sFall configuration files. The last 10 game folders are remembered.'}" />
-				<Button Grid.Column="2"
-					Margin="8,0,0,0"
-					MinWidth="40"
-					FontFamily="{DynamicResource SymbolThemeFontFamily}"
-					Content="&#xE838;"
-					Command="{Binding ChooseGameFolderCommand}"
-					ToolTip="{loc:T 'Select the game folder.'}" />
-			</Grid>
+        <Grid Grid.Row="1" Margin="8,6,8,8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-			<TabControl x:Name="MainTabs" Grid.Row="1">
-				<TabItem x:Name="SfallTab" Header="{loc:T 'sFall Config'}" Visibility="{Binding IsGameConfigured, Converter={StaticResource BooleanToVisibility}}">
-					<views:SfallView Margin="0,8,0,0" DataContext="{Binding Sfall}" />
-				</TabItem>
-				<TabItem Header="{loc:T 'Hi-Res Config'}" Visibility="{Binding IsGameConfigured, Converter={StaticResource BooleanToVisibility}}">
-					<views:HiResView Margin="0,8,0,0" DataContext="{Binding HiRes}" />
-				</TabItem>
-				<TabItem Header="{loc:T 'Mods'}" Visibility="{Binding IsGameConfigured, Converter={StaticResource BooleanToVisibility}}">
-					<views:ModsView Margin="0,8,0,0" DataContext="{Binding Mods}" />
-				</TabItem>
-				<TabItem Header="{loc:T 'Settings'}" Visibility="{Binding IsGameConfigured, Converter={StaticResource BooleanToVisibility}}">
-					<views:SettingsView Margin="0,8,0,0" DataContext="{Binding Settings}" />
-				</TabItem>
-				<TabItem x:Name="DatInfoTab" Header="{loc:T 'Dat Info'}">
-					<views:DatInfoView Margin="0,8,0,0" DataContext="{Binding DatInfo}" />
-				</TabItem>
-			</TabControl>
+            <!--  The game folder the configurator works on  -->
+            <Grid Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Margin="0,0,10,0"
+                    VerticalAlignment="Center"
+                    Text="{loc:T 'Game folder:'}" />
+                <ComboBox
+                    Grid.Column="1"
+                    HorizontalAlignment="Stretch"
+                    ItemsSource="{Binding RecentGameFolders}"
+                    SelectedItem="{Binding SelectedGameFolder}"
+                    ToolTip="{loc:T 'The folder that holds the game and the sFall configuration files. The last 10 game folders are remembered.'}" />
+                <Button
+                    Grid.Column="2"
+                    MinWidth="40"
+                    Margin="8,0,0,0"
+                    Command="{Binding ChooseGameFolderCommand}"
+                    Content="&#xE838;"
+                    FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                    ToolTip="{loc:T 'Select the game folder.'}" />
+            </Grid>
 
-			<Grid Grid.Row="2" Margin="0,12,0,0">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="Auto" />
-					<ColumnDefinition Width="*" />
-					<ColumnDefinition Width="Auto" />
-				</Grid.ColumnDefinitions>
+            <TabControl x:Name="MainTabs" Grid.Row="1">
+                <TabItem
+                    x:Name="SfallTab"
+                    Header="{loc:T 'sFall Config'}"
+                    Visibility="{Binding IsGameConfigured, Converter={StaticResource BooleanToVisibility}}">
+                    <views:SfallView Margin="0,8,0,0" DataContext="{Binding Sfall}" />
+                </TabItem>
+                <TabItem Header="{loc:T 'Hi-Res Config'}" Visibility="{Binding IsGameConfigured, Converter={StaticResource BooleanToVisibility}}">
+                    <views:HiResView Margin="0,8,0,0" DataContext="{Binding HiRes}" />
+                </TabItem>
+                <TabItem Header="{loc:T 'Mods'}" Visibility="{Binding IsGameConfigured, Converter={StaticResource BooleanToVisibility}}">
+                    <views:ModsView Margin="0,8,0,0" DataContext="{Binding Mods}" />
+                </TabItem>
+                <TabItem Header="{loc:T 'Settings'}" Visibility="{Binding IsGameConfigured, Converter={StaticResource BooleanToVisibility}}">
+                    <views:SettingsView Margin="0,8,0,0" DataContext="{Binding Settings}" />
+                </TabItem>
+                <TabItem x:Name="DatInfoTab" Header="{loc:T 'Dat Info'}">
+                    <views:DatInfoView Margin="0,8,0,0" DataContext="{Binding DatInfo}" />
+                </TabItem>
+            </TabControl>
 
-				<Button Content="{loc:T 'Run Game'}"
-					MinWidth="120"
-					Command="{Binding RunGameCommand}"
-					ToolTip="{Binding RunGameToolTip}"
-					ToolTipService.ShowOnDisabled="True"
-					Style="{DynamicResource AccentButtonStyle}" />
+            <Grid Grid.Row="2" Margin="0,12,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-				<StackPanel Grid.Column="1"
-					Orientation="Horizontal"
-					HorizontalAlignment="Center"
-					Visibility="{Binding IsGameConfigured, Converter={StaticResource BooleanToVisibility}}">
-					<TextBlock Text="{Binding Language.Label}" VerticalAlignment="Center" Margin="0,0,10,0" />
-					<ComboBox Width="170"
-						ToolTip="{Binding Language.ToolTip}"
-						ItemsSource="{Binding Language.Suggestions}"
-						SelectedItem="{Binding Language.Text}"
-						IsEnabled="{Binding Language.IsEnabled}" />
-				</StackPanel>
+                <Button
+                    MinWidth="120"
+                    Command="{Binding RunGameCommand}"
+                    Content="{loc:T 'Run Game'}"
+                    Style="{DynamicResource AccentButtonStyle}"
+                    ToolTip="{Binding RunGameToolTip}"
+                    ToolTipService.ShowOnDisabled="True" />
 
-				<Button Grid.Column="2"
-					Content="{loc:T 'Done'}"
-					MinWidth="120"
-					Command="{Binding DoneCommand}"
-					ToolTip="{loc:T 'Save the settings and close.'}" />
-			</Grid>
-		</Grid>
-	</Grid>
+                <StackPanel
+                    Grid.Column="1"
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal"
+                    Visibility="{Binding IsGameConfigured, Converter={StaticResource BooleanToVisibility}}">
+                    <TextBlock
+                        Margin="0,0,10,0"
+                        VerticalAlignment="Center"
+                        Text="{Binding Language.Label}" />
+                    <ComboBox
+                        Width="170"
+                        IsEnabled="{Binding Language.IsEnabled}"
+                        ItemsSource="{Binding Language.Suggestions}"
+                        SelectedItem="{Binding Language.Text}"
+                        ToolTip="{Binding Language.ToolTip}" />
+                </StackPanel>
+
+                <Button
+                    Grid.Column="2"
+                    MinWidth="120"
+                    Command="{Binding DoneCommand}"
+                    Content="{loc:T 'Done'}"
+                    ToolTip="{loc:T 'Save the settings and close.'}" />
+            </Grid>
+        </Grid>
+    </Grid>
+
 </Window>

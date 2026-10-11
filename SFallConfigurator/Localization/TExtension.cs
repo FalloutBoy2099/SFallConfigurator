@@ -19,7 +19,7 @@ namespace SFallConfigurator.Localization
 
 		public override Object ProvideValue(IServiceProvider serviceProvider)
 		{
-			Binding binding = new Binding(nameof(LocalizedText.Value))
+			Binding binding = new(nameof(LocalizedText.Value))
 			{
 				Source = Localizer.Instance.Observe(Text),
 				Mode = BindingMode.OneWay,

@@ -24,10 +24,10 @@ namespace SFallConfigurator.Tests
 				return null;
 			}
 
-			TestFolder folder = new TestFolder();
+			TestFolder folder = new();
 			foreach (String file in Directory.GetFiles(source, "*.*", SearchOption.AllDirectories))
 			{
-				FileInfo info = new FileInfo(file);
+				FileInfo info = new(file);
 				if (info.Length > 2_000_000)
 				{
 					continue;
@@ -51,9 +51,9 @@ namespace SFallConfigurator.Tests
 
 		private static MainViewModel Open(String path, TestInteraction interaction)
 		{
-			GameConfiguration configuration = new GameConfiguration(path);
+			GameConfiguration configuration = new(path);
 			configuration.Load();
-			MainViewModel viewModel = new MainViewModel(configuration, interaction, () => { }, _ => { }, _ => { });
+			MainViewModel viewModel = new(configuration, interaction, () => { }, _ => { }, _ => { });
 			viewModel.Load();
 			return viewModel;
 		}
@@ -67,7 +67,7 @@ namespace SFallConfigurator.Tests
 				return;
 			}
 
-			TestInteraction interaction = new TestInteraction();
+			TestInteraction interaction = new();
 			MainViewModel viewModel = Open(folder.Path, interaction);
 
 			Assert.True(viewModel.IsGameConfigured);

@@ -70,7 +70,7 @@ namespace SFallConfigurator
 			MainViewModel viewModel;
 			try
 			{
-				GameConfiguration configuration = new GameConfiguration(GameLocator.Normalize(gamePath));
+				GameConfiguration configuration = new(GameLocator.Normalize(gamePath));
 				configuration.Load();
 				viewModel = new MainViewModel(configuration, _interaction!, () => _window?.Close(), ChangeGameFolder, ChangeLanguage);
 				viewModel.Load();

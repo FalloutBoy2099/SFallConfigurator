@@ -1,31 +1,38 @@
-<UserControl x:Class="SFallConfigurator.Views.DatInfoView"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:loc="clr-namespace:SFallConfigurator.Localization"
-	IsVisibleChanged="OnIsVisibleChanged"
-	DataContextChanged="OnDataContextChanged">
-	<Grid>
-		<Grid.RowDefinitions>
-			<RowDefinition Height="*" />
-		</Grid.RowDefinitions>
+<UserControl
+    x:Class="SFallConfigurator.Views.DatInfoView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:loc="clr-namespace:SFallConfigurator.Localization"
+    DataContextChanged="OnDataContextChanged"
+    IsVisibleChanged="OnIsVisibleChanged">
 
-		<ListView x:Name="Archives"
-			ItemsSource="{Binding Files}"
-			SelectedItem="{Binding Selected}"
-			MouseDoubleClick="OnArchivesMouseDoubleClick"
-			ToolTip="{loc:T 'Double-click to edit the description.'}">
-			<ListView.View>
-				<GridView>
-					<GridViewColumn Header="{loc:T 'File name'}" Width="200">
-						<GridViewColumn.CellTemplate>
-							<DataTemplate>
-								<TextBlock Text="{Binding Name}" ToolTip="{Binding FullPath}" />
-							</DataTemplate>
-						</GridViewColumn.CellTemplate>
-					</GridViewColumn>
-					<GridViewColumn Header="{loc:T 'Description'}" Width="560" DisplayMemberBinding="{Binding Description}" />
-				</GridView>
-			</ListView.View>
-		</ListView>
-	</Grid>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <ListView
+            x:Name="Archives"
+            ItemsSource="{Binding Files}"
+            MouseDoubleClick="OnArchivesMouseDoubleClick"
+            SelectedItem="{Binding Selected}"
+            ToolTip="{loc:T 'Double-click to edit the description.'}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="200" Header="{loc:T 'File name'}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}" ToolTip="{Binding FullPath}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn
+                        Width="560"
+                        DisplayMemberBinding="{Binding Description}"
+                        Header="{loc:T 'Description'}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+
 </UserControl>

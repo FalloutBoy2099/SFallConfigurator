@@ -16,7 +16,7 @@ namespace SFallConfigurator.Tests
 	/// </summary>
 	public sealed class LocalizationTests : IDisposable
 	{
-		private readonly TestFolder _settings = new TestFolder();
+		private readonly TestFolder _settings = new();
 
 		public LocalizationTests()
 		{

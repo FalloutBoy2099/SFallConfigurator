@@ -13,13 +13,13 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void LoadsTheFilesOfAGameFolderAndSavesOnlyWhatChanged()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			folder.Write("ddraw.ini", "[Main]\r\nExtraCRC=0x1\r\n");
 			folder.Write("f2_res.ini", "[MAIN]\r\nSCR_WIDTH=800\r\n");
 			folder.Write("fallout2.cfg", "[system]\r\nlanguage=english\r\nmaster_patches=data\r\n");
 			folder.Write("sfall/sfall-mods.ini", "[Misc]\r\nAutoSave=0\r\n");
 
-			GameConfiguration configuration = new GameConfiguration(folder.Path);
+			GameConfiguration configuration = new(folder.Path);
 			configuration.Load();
 
 			Assert.True(configuration.DdrawExists);
@@ -46,11 +46,11 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void SfallModsIniIsFoundInTheConfiguredFolder()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			folder.Write("ddraw.ini", "[Misc]\r\nIniConfigFolder=mods/ini\r\n");
 			folder.Write("mods/ini/sfall-mods.ini", "[Misc]\r\nAutoSave=1\r\n");
 
-			GameConfiguration configuration = new GameConfiguration(folder.Path);
+			GameConfiguration configuration = new(folder.Path);
 			configuration.Load();
 
 			Assert.NotNull(configuration.SfallMods);
@@ -61,11 +61,11 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void CustomSfallIniTakesPrecedenceOverDdraw()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			folder.Write("ddraw.ini", "[Main]\r\nMode=1\r\nOnlyHere=a\r\n");
 			folder.Write("sfall.ini", "[Main]\r\nMode=5\r\n");
 
-			GameConfiguration configuration = new GameConfiguration(folder.Path);
+			GameConfiguration configuration = new(folder.Path);
 			configuration.Load();
 
 			Assert.Equal("5", configuration.SfallSource.Read(null, "Mode"));
@@ -79,10 +79,10 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void MakingSfallIniCopiesDdraw()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			folder.Write("ddraw.ini", "[Main]\r\nMode=1\r\n");
 
-			GameConfiguration configuration = new GameConfiguration(folder.Path);
+			GameConfiguration configuration = new(folder.Path);
 			configuration.Load();
 			configuration.CreateSfallIni();
 			configuration.Save();
@@ -94,10 +94,10 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void SettingsAreSavedInTheSfallFolderAndKeepTheLanguages()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			folder.Write("ddraw.ini", "[Main]\r\n");
 
-			GameConfiguration configuration = new GameConfiguration(folder.Path);
+			GameConfiguration configuration = new(folder.Path);
 			configuration.Load();
 			configuration.GameExe = "FALLOUT2HR.EXE";
 			configuration.AddLanguage("english");
@@ -105,7 +105,7 @@ namespace SFallConfigurator.Tests
 			configuration.AddLanguage("French");
 			configuration.Save();
 
-			GameConfiguration reloaded = new GameConfiguration(folder.Path);
+			GameConfiguration reloaded = new(folder.Path);
 			reloaded.Load();
 
 			Assert.True(File.Exists(folder.Combine("sfall/setting.sfc")));
@@ -116,8 +116,8 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void DefaultGameExeIsFallout2()
 		{
-			using TestFolder folder = new TestFolder();
-			GameConfiguration configuration = new GameConfiguration(folder.Path);
+			using TestFolder folder = new();
+			GameConfiguration configuration = new(folder.Path);
 			configuration.Load();
 
 			Assert.Equal("FALLOUT2.EXE", configuration.GameExe);
@@ -127,11 +127,11 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void DebugSectionIsAddedOnlyOnce()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			folder.Write("ddraw.ini", "[Main]\r\n");
 			folder.Write("fallout2.cfg", "[system]\r\nlanguage=english\r\n");
 
-			GameConfiguration configuration = new GameConfiguration(folder.Path);
+			GameConfiguration configuration = new(folder.Path);
 			configuration.Load();
 			configuration.EnsureDebugSection();
 			configuration.EnsureDebugSection();
@@ -143,9 +143,9 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void MergeCopiesValuesOfExistingKeysOnly()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String oldIni = folder.Write("old.ini", "[Main]\r\nMode=4\r\nRemoved=1\r\nModifiedIni=3\r\n[Misc]\r\nEmpty=\r\nKeep=9\r\n");
-			IniDocument target = new IniDocument("new.ini", ["[Main]", "Mode=0", "NewKey=7", "[Misc]", "Empty=x", "Keep=1"], Encoding.UTF8);
+			IniDocument target = new("new.ini", ["[Main]", "Mode=0", "NewKey=7", "[Misc]", "Empty=x", "Keep=1"], Encoding.UTF8);
 
 			ConfigMerger.Merge(target, oldIni, carryModifiedIni: true);
 
@@ -160,7 +160,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void InstallModeMergesTheBackupsAndDeletesThemOnRequest()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			folder.Write("ddraw.ini", "[Main]\r\nMode=0\r\n");
 			folder.Write("ddraw.ini.bak", "[Main]\r\nMode=5\r\n");
 			folder.Write("sfall-mods.ini", "[Misc]\r\nAutoSave=0\r\n");
@@ -178,7 +178,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void InstallModeKeepsTheBackupsWithoutThePlusFlag()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			folder.Write("ddraw.ini", "[Main]\r\nMode=0\r\n");
 			folder.Write("ddraw.ini.bak", "[Main]\r\nMode=5\r\n");
 
@@ -189,7 +189,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void InstallModeIsNotTriggeredByOtherArguments()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 
 			Assert.Null(InstallMode.TryRun(folder.Path, []));
 			Assert.Null(InstallMode.TryRun(folder.Path, ["--game", "C:\\x"]));
@@ -198,7 +198,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void GameFolderCanBeNamedOnTheCommandLine()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 
 			Assert.Equal(folder.Path, GameLocator.Resolve(["--game", folder.Path]));
 			Assert.Equal(folder.Path, GameLocator.Resolve(["--game=" + folder.Path]));
@@ -221,7 +221,7 @@ namespace SFallConfigurator.Tests
 	{
 		private static TestFolder CreateFolder()
 		{
-			TestFolder folder = new TestFolder();
+			TestFolder folder = new();
 			Directory.CreateDirectory(folder.Combine("mods"));
 			File.WriteAllBytes(folder.Combine("mods/alpha.dat"), [1]);
 			File.WriteAllBytes(folder.Combine("mods/beta.dat"), [1]);
@@ -236,7 +236,7 @@ namespace SFallConfigurator.Tests
 			using TestFolder folder = CreateFolder();
 			folder.Write("mods/mods_order.ini", "; my order\r\nbeta.dat=1\r\nalpha.dat=0 ; disabled\r\nghost.dat=1\r\n");
 
-			ModsManager manager = new ModsManager(folder.Path);
+			ModsManager manager = new(folder.Path);
 			manager.Load();
 
 			Assert.Equal(["beta.dat", "alpha.dat", "ghost.dat"], manager.Mods.Select(mod => mod.Name));
@@ -253,7 +253,7 @@ namespace SFallConfigurator.Tests
 			using TestFolder folder = CreateFolder();
 			folder.Write("mods/mods_order.ini", "; head\r\nbeta.dat=1\r\n; middle\r\nalpha.dat=0 ; disabled\r\n");
 
-			ModsManager manager = new ModsManager(folder.Path);
+			ModsManager manager = new(folder.Path);
 			manager.Load();
 			manager.Move(0, 1);
 			manager.Save();
@@ -267,7 +267,7 @@ namespace SFallConfigurator.Tests
 			using TestFolder folder = CreateFolder();
 			folder.Write("mods/mods_order.ini", "ghost.dat=0\r\nbeta.dat=1\r\n");
 
-			ModsManager manager = new ModsManager(folder.Path);
+			ModsManager manager = new(folder.Path);
 			manager.Load();
 			manager.Mods[1].IsEnabled = false;
 			manager.Save();
@@ -281,7 +281,7 @@ namespace SFallConfigurator.Tests
 			using TestFolder folder = CreateFolder();
 			folder.Write("mods/mods_order.ini", "beta.dat=1\r\nalpha.dat=1\r\n");
 
-			ModsManager manager = new ModsManager(folder.Path);
+			ModsManager manager = new(folder.Path);
 			manager.Load();
 
 			manager.Add(1, "gamma.dat");
@@ -302,7 +302,7 @@ namespace SFallConfigurator.Tests
 			String path = folder.Write("mods/mods_order.ini", "beta.dat=1\r\n");
 			DateTime before = File.GetLastWriteTimeUtc(path);
 
-			ModsManager manager = new ModsManager(folder.Path);
+			ModsManager manager = new(folder.Path);
 			manager.Load();
 			manager.Save();
 
@@ -315,7 +315,7 @@ namespace SFallConfigurator.Tests
 		{
 			using TestFolder fromText = CreateFolder();
 			fromText.Write("mods/mods_order.txt", "gamma.dat\r\n# comment\r\nalpha.dat\r\n");
-			ModsManager first = new ModsManager(fromText.Path);
+			ModsManager first = new(fromText.Path);
 			first.Load();
 			Assert.False(first.OrderFileExists);
 			first.CreateOrderFile();
@@ -324,7 +324,7 @@ namespace SFallConfigurator.Tests
 			Assert.Equal(["gamma.dat=1", "# comment", "alpha.dat=1"], File.ReadAllLines(fromText.Combine("mods/mods_order.ini")));
 
 			using TestFolder fromScan = CreateFolder();
-			ModsManager second = new ModsManager(fromScan.Path);
+			ModsManager second = new(fromScan.Path);
 			second.Load();
 			second.CreateOrderFile();
 
@@ -336,7 +336,7 @@ namespace SFallConfigurator.Tests
 		public void FirstModCreatesTheOrderFile()
 		{
 			using TestFolder folder = CreateFolder();
-			ModsManager manager = new ModsManager(folder.Path);
+			ModsManager manager = new(folder.Path);
 			manager.Load();
 
 			manager.Add(0, "alpha.dat");

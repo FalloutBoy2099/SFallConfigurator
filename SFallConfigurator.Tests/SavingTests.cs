@@ -12,7 +12,7 @@ namespace SFallConfigurator.Tests
 	/// </summary>
 	public sealed class SavingTests : IDisposable
 	{
-		private readonly TestFolder _settings = new TestFolder();
+		private readonly TestFolder _settings = new();
 
 		public SavingTests()
 		{
@@ -38,7 +38,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void AFileIsReplacedWithoutLeavingATemporaryFile()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String path = folder.Write("a.ini", "[A]\r\nKey=1\r\n");
 
 			StagedFile.WriteAllLines(path, ["[A]", "Key=2"], new UTF8Encoding(false));
@@ -50,7 +50,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void AFailedWriteLeavesTheOldFileAndNoTemporaryFile()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String path = folder.Write("a.ini", "[A]\r\nKey=1\r\n");
 			Lock(path);
 			try
@@ -69,10 +69,10 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void WhenOneGameFileCannotBeWrittenNoneOfThemIsTouched()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String ddraw = folder.Write("ddraw.ini", "[Main]\r\nExtraCRC=0x1\r\n");
 			String cfg = folder.Write("fallout2.cfg", "[system]\r\nlanguage=english\r\nmaster_patches=data\r\n");
-			GameConfiguration configuration = new GameConfiguration(folder.Path);
+			GameConfiguration configuration = new(folder.Path);
 			configuration.Load();
 			Assert.True(configuration.SfallSource.Write(null, "ExtraCRC", "0x1, 0x2"));
 			Assert.True(configuration.GameCfgSource.Write("system", "language", "french"));
@@ -95,13 +95,14 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void AFailedSaveIsReportedAndKeepsTheWindowOpen()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			folder.Write("ddraw.ini", "[Main]\r\nExtraCRC=0x1\r\n");
 			String cfg = folder.Write("fallout2.cfg", "[system]\r\nlanguage=english\r\nmaster_patches=data\r\n");
-			GameConfiguration configuration = new GameConfiguration(folder.Path);
+			GameConfiguration configuration = new(folder.Path);
 			configuration.Load();
-			TestInteraction interaction = new TestInteraction { SaveAnswer = true };
-			MainViewModel viewModel = new MainViewModel(configuration, interaction, () => { }, _ => { }, _ => { });
+			TestInteraction interaction = new()
+			{ SaveAnswer = true };
+			MainViewModel viewModel = new(configuration, interaction, () => { }, _ => { }, _ => { });
 			viewModel.Load();
 			Assert.True(configuration.GameCfgSource.Write("system", "language", "french"));
 			Lock(cfg);
@@ -125,12 +126,12 @@ namespace SFallConfigurator.Tests
 				return;
 			}
 
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			Byte[] accented = [0xC8, 0xE9, 0xF0];
 			Byte[] original = [.. "[system]\r\nlanguage=english\r\nmaster_patches="u8.ToArray(), .. accented, .. "\r\n"u8.ToArray()];
 			File.WriteAllBytes(folder.Combine("fallout2.cfg"), original);
 			folder.Write("ddraw.ini", "[Main]\r\nExtraCRC=0x1\r\n");
-			GameConfiguration configuration = new GameConfiguration(folder.Path);
+			GameConfiguration configuration = new(folder.Path);
 			configuration.Load();
 
 			Assert.True(configuration.GameCfgSource.Write("system", "language", "french"));

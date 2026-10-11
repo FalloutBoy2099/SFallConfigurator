@@ -49,7 +49,7 @@ namespace SFallConfigurator.Views
 		/// </summary>
 		internal static MessageBoxResult Show(Window? owner, String message, String caption, MessageBoxButton buttons, MessageBoxImage image)
 		{
-			MessageDialog dialog = new MessageDialog(message, caption, buttons, image);
+			MessageDialog dialog = new(message, caption, buttons, image);
 			if (owner is { IsLoaded: true })
 			{
 				dialog.Owner = owner;
@@ -89,7 +89,7 @@ namespace SFallConfigurator.Views
 
 		private void AddButton(MessageBoxResult result, Boolean isDefault, Boolean isCancel)
 		{
-			Button button = new Button
+			Button button = new()
 			{
 				Content = GetCaption(result),
 				MinWidth = 80,

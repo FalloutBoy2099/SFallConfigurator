@@ -22,7 +22,7 @@ namespace SFallConfigurator.Tests
 		{
 			String path = folder.Combine("test.dat");
 			using FileStream stream = File.Create(path);
-			using BinaryWriter writer = new BinaryWriter(stream, Encoding.Latin1);
+			using BinaryWriter writer = new(stream, Encoding.Latin1);
 			writer.Write(data);
 
 			Int64 treeStart = stream.Position;
@@ -45,8 +45,8 @@ namespace SFallConfigurator.Tests
 
 		private static Byte[] Compress(Byte[] data)
 		{
-			using MemoryStream packed = new MemoryStream();
-			using (ZLibStream zlib = new ZLibStream(packed, CompressionLevel.SmallestSize, leaveOpen: true))
+			using MemoryStream packed = new();
+			using (ZLibStream zlib = new(packed, CompressionLevel.SmallestSize, leaveOpen: true))
 			{
 				zlib.Write(data, 0, data.Length);
 			}
@@ -60,7 +60,7 @@ namespace SFallConfigurator.Tests
 		[InlineData(1000)]
 		public void ACountThatCannotFitInTheDirectoryIsRefused(Int32 count)
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String path = Write(folder, [1, 2, 3], count, new Record("a.txt", false, 3, 3, 0));
 
 			Assert.Throws<DatFormatException>(() => DatArchive.Open(path, writable: false));
@@ -73,7 +73,7 @@ namespace SFallConfigurator.Tests
 		[InlineData(Int32.MaxValue, Int32.MaxValue, 0)]
 		public void SizesAndOffsetsOutsideTheDataAreRefused(Int32 unpacked, Int32 packed, UInt32 offset)
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String path = Write(folder, [1, 2, 3], null, new Record("a.txt", false, unpacked, packed, offset));
 
 			Assert.Throws<DatFormatException>(() => DatArchive.Open(path, writable: false));
@@ -82,7 +82,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void ADamagedCompressedFileIsReportedWhenItIsRead()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			Byte[] garbage = [0x78, 0x9C, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF];
 			String path = Write(folder, garbage, null, new Record("a.txt", true, 100, garbage.Length, 0));
 
@@ -94,7 +94,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void ACompressedFileLargerThanItsStatedSizeIsRefused()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			Byte[] packed = Compress(new Byte[10_000_000]);
 			String path = Write(folder, packed, null, new Record("bomb.bin", true, 100, packed.Length, 0));
 
@@ -106,7 +106,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void ACompressedFileSmallerThanItsStatedSizeIsRefused()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			Byte[] packed = Compress(new Byte[50]);
 			String path = Write(folder, packed, null, new Record("short.bin", true, 100, packed.Length, 0));
 
@@ -118,7 +118,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void AFileThatIsExactlyAsLargeAsItsStatedSizeIsRead()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			Byte[] content = new Byte[300];
 			new Random(1).NextBytes(content);
 			Byte[] packed = Compress(content);
@@ -132,7 +132,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void SavingAFileAndReadingItBackKeepsTheOtherFiles()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			Byte[] first = Encoding.ASCII.GetBytes("first file");
 			String path = Write(folder, first, null, new Record("a.txt", false, first.Length, first.Length, 0));
 

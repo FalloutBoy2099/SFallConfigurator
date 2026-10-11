@@ -60,7 +60,7 @@ namespace SFallConfigurator.Services
 		{
 			try
 			{
-				using FileStream stream = new FileStream(exePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+				using FileStream stream = new(exePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 				return HasSignature(stream);
 			}
 			catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
@@ -73,7 +73,7 @@ namespace SFallConfigurator.Services
 		{
 			try
 			{
-				using FileStream stream = new FileStream(exePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+				using FileStream stream = new(exePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 				if (stream.Length < HiResCodeOffset)
 				{
 					return false;
@@ -142,7 +142,7 @@ namespace SFallConfigurator.Services
 		{
 			try
 			{
-				using FileStream stream = new FileStream(exePath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
+				using FileStream stream = new(exePath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
 				if (!HasSignature(stream))
 				{
 					return false;
@@ -193,7 +193,7 @@ namespace SFallConfigurator.Services
 		{
 			try
 			{
-				using FileStream stream = new FileStream(exePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+				using FileStream stream = new(exePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 				if (stream.Length < DllNameOffset + SfallName.Length)
 				{
 					return DllPatchState.Unknown;

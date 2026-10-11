@@ -38,7 +38,7 @@ namespace SFallConfigurator.Configuration
 
 		private readonly String _settingsPath;
 		private readonly String _legacySettingsPath;
-		private readonly List<String> _languages = new List<String>();
+		private readonly List<String> _languages = new();
 
 		public GameConfiguration(String gamePath)
 		{

@@ -46,7 +46,7 @@ namespace SFallConfigurator.ViewModels
 			ChooseGameFolderCommand = new RelayCommand(ChooseGameFolder);
 			ChangeLanguageCommand = new RelayCommand(code => _changeLanguage((String)code!));
 
-			OptionContext context = new OptionContext(configuration, interaction);
+			OptionContext context = new(configuration, interaction);
 			HiRes = new HiResViewModel(context, OpenInEditor);
 			Sfall = new SfallViewModel(context, HiRes, OpenInEditor);
 			Mods = new ModsViewModel(context, OpenInEditor);

@@ -21,17 +21,17 @@ namespace SFallConfigurator.Tests
 		/// </summary>
 		private static readonly String[] BuiltAtRunTime = ["Automatic", "Light", "Dark"];
 
-		private static readonly Regex StringLiteral = new Regex("\"((?:[^\"\\\\\\r\\n]|\\\\.)*)\"", RegexOptions.Compiled);
-		private static readonly Regex JoinedLiterals = new Regex("\"\\s*\\+\\s*\"", RegexOptions.Compiled);
-		private static readonly Regex LocalizedCall = new Regex("Localizer\\s*\\.\\s*[TF]\\(\\s*\"((?:[^\"\\\\\\r\\n]|\\\\.)*)\"", RegexOptions.Compiled);
-		private static readonly Regex InteractionCall = new Regex("\\b(?:ShowMessage|ShowError|Confirm|AskSaveChanges|PromptText|PickFolder)\\(\\s*\"((?:[^\"\\\\\\r\\n]|\\\\.)*)\"(?:\\s*,\\s*\"((?:[^\"\\\\\\r\\n]|\\\\.)*)\")?", RegexOptions.Compiled);
-		private static readonly Regex InteractionCaption = new Regex(@"\b(?:ShowMessage|ShowError|Confirm|AskSaveChanges)\([^;""]*,\s*""((?:[^""\\\r\n]|\\.)*)""\s*\)", RegexOptions.Compiled);
-		private static readonly Regex FilterLiteral = new Regex("\"([^\"|\\r\\n]+)\\|\\*\\.[a-z*]+\"", RegexOptions.Compiled);
-		private static readonly Regex XamlKey = new Regex("\\{loc:T '([^']*)'\\}", RegexOptions.Compiled);
+		private static readonly Regex StringLiteral = new("\"((?:[^\"\\\\\\r\\n]|\\\\.)*)\"", RegexOptions.Compiled);
+		private static readonly Regex JoinedLiterals = new("\"\\s*\\+\\s*\"", RegexOptions.Compiled);
+		private static readonly Regex LocalizedCall = new("Localizer\\s*\\.\\s*[TF]\\(\\s*\"((?:[^\"\\\\\\r\\n]|\\\\.)*)\"", RegexOptions.Compiled);
+		private static readonly Regex InteractionCall = new("\\b(?:ShowMessage|ShowError|Confirm|AskSaveChanges|PromptText|PickFolder)\\(\\s*\"((?:[^\"\\\\\\r\\n]|\\\\.)*)\"(?:\\s*,\\s*\"((?:[^\"\\\\\\r\\n]|\\\\.)*)\")?", RegexOptions.Compiled);
+		private static readonly Regex InteractionCaption = new(@"\b(?:ShowMessage|ShowError|Confirm|AskSaveChanges)\([^;""]*,\s*""((?:[^""\\\r\n]|\\.)*)""\s*\)", RegexOptions.Compiled);
+		private static readonly Regex FilterLiteral = new("\"([^\"|\\r\\n]+)\\|\\*\\.[a-z*]+\"", RegexOptions.Compiled);
+		private static readonly Regex XamlKey = new("\\{loc:T '([^']*)'\\}", RegexOptions.Compiled);
 
 		private static String FindSourceFolder()
 		{
-			DirectoryInfo? directory = new DirectoryInfo(AppContext.BaseDirectory);
+			DirectoryInfo? directory = new(AppContext.BaseDirectory);
 			while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "SFallConfigurator.slnx")))
 			{
 				directory = directory.Parent;

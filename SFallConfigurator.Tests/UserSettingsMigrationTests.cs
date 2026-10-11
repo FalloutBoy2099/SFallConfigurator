@@ -10,7 +10,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void TheSettingsOfTheOldNameAreCopiedOnce()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String legacy = folder.Write("old/settings.txt", "language=fr\r\ntheme=dark\r\n");
 			String current = folder.Combine("new/settings.txt");
 
@@ -23,7 +23,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void TheSettingsOfTheNewNameAreNeverReplacedByTheOldOnes()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String legacy = folder.Write("old/settings.txt", "language=fr\r\n");
 			String current = folder.Write("new/settings.txt", "language=de\r\n");
 
@@ -35,7 +35,7 @@ namespace SFallConfigurator.Tests
 		[Fact]
 		public void WithoutOldSettingsNothingIsCreated()
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			String current = folder.Combine("new/settings.txt");
 
 			UserSettings.MigrateLegacySettings(current, folder.Combine("old/settings.txt"));

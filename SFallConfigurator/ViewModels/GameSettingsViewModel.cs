@@ -165,7 +165,7 @@ namespace SFallConfigurator.ViewModels
 
 		private PathOption CreatePathOption(OptionLocation location, String key, String label, PathKind kind, String gamePath, String toolTip)
 		{
-			PathOption option = new PathOption(location, key, label, kind, gamePath, _context.Interaction)
+			PathOption option = new(location, key, label, kind, gamePath, _context.Interaction)
 			{
 				ToolTip = toolTip,
 				FileFilter = "Dat files|*.dat",

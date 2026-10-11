@@ -15,7 +15,7 @@ namespace SFallConfigurator.Tests
 		[InlineData(65001)]
 		public void TheLegacyFilesAreNeverWrittenWithAByteOrderMark(Int32 codePage)
 		{
-			using TestFolder folder = new TestFolder();
+			using TestFolder folder = new();
 			Encoding encoding = TextEncodings.CreateAnsiEncoding(codePage);
 			String path = folder.Combine("fallout2.cfg");
 

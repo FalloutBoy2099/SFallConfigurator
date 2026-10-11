@@ -1,79 +1,97 @@
-<UserControl x:Class="SFallConfigurator.Views.HiResView"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:loc="clr-namespace:SFallConfigurator.Localization"
-	DataContextChanged="OnDataContextChanged">
-	<Grid>
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto" />
-			<RowDefinition Height="*" />
-			<RowDefinition Height="Auto" />
-		</Grid.RowDefinitions>
+<UserControl
+    x:Class="SFallConfigurator.Views.HiResView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:loc="clr-namespace:SFallConfigurator.Localization"
+    DataContextChanged="OnDataContextChanged">
 
-		<!-- Which Hi-Res patch the game uses -->
-		<Border Margin="0,0,0,6"
-			Padding="10,6"
-			CornerRadius="6"
-			BorderThickness="1"
-			Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-			BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-			DataContext="{Binding Mode}">
-			<StackPanel>
-				<TextBlock Text="{loc:T 'High Resolution Patch Mode (for version 4.x only)'}" FontWeight="SemiBold" Margin="0,0,0,6" />
-				<Grid>
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="*" />
-						<ColumnDefinition Width="*" />
-						<ColumnDefinition Width="Auto" />
-					</Grid.ColumnDefinitions>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
-					<RadioButton x:Name="SfallMode"
-						GroupName="HiResMode"
-						IsChecked="{Binding IsSfallSelected}"
-						IsEnabled="{Binding IsSfallAvailable}"
-						ToolTip="{loc:T 'The high resolution patch integrated into sFall.'}"
-						ToolTipService.ShowOnDisabled="True">
-						<StackPanel Orientation="Horizontal">
-							<TextBlock Text="{loc:T 'sFall Hi-Res Mode'}" />
-							<TextBlock Text="{loc:T '  (active)'}"
-								Foreground="{DynamicResource SystemFillColorSuccessBrush}"
-								Visibility="{Binding IsSfallActive, Converter={StaticResource BooleanToVisibility}}" />
-						</StackPanel>
-					</RadioButton>
-					<RadioButton x:Name="MashMode"
-						Grid.Column="1"
-						GroupName="HiResMode"
-						IsChecked="{Binding IsMashSelected}"
-						IsEnabled="{Binding IsMashAvailable}"
-						ToolTip="{loc:T 'The high resolution patch by Mash (f2_res.dll), loaded through a patch of the game executable.'}"
-						ToolTipService.ShowOnDisabled="True">
-						<StackPanel Orientation="Horizontal">
-							<TextBlock Text="{loc:T 'Hi-Res by Mash'}" />
-							<TextBlock Text="{loc:T '  (active)'}"
-								Foreground="{DynamicResource SystemFillColorSuccessBrush}"
-								Visibility="{Binding IsMashActive, Converter={StaticResource BooleanToVisibility}}" />
-						</StackPanel>
-					</RadioButton>
-					<Button Grid.Column="2"
-						MinWidth="120"
-						Content="{loc:T 'Apply'}"
-						Command="{Binding ApplyCommand}"
-						Style="{DynamicResource AccentButtonStyle}" />
-				</Grid>
-			</StackPanel>
-		</Border>
+        <!--  Which Hi-Res patch the game uses  -->
+        <Border
+            Margin="0,0,0,6"
+            Padding="10,6"
+            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="6"
+            DataContext="{Binding Mode}">
+            <StackPanel>
+                <TextBlock
+                    Margin="0,0,0,6"
+                    FontWeight="SemiBold"
+                    Text="{loc:T 'High Resolution Patch Mode (for version 4.x only)'}" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-		<TabControl x:Name="Pages" Grid.Row="1"
-			ItemsSource="{Binding Pages}"
-			SelectedIndex="0"
-			ItemTemplate="{StaticResource PageHeaderTemplate}"
-			IsEnabled="{Binding IsAvailable}" />
+                    <RadioButton
+                        x:Name="SfallMode"
+                        GroupName="HiResMode"
+                        IsChecked="{Binding IsSfallSelected}"
+                        IsEnabled="{Binding IsSfallAvailable}"
+                        ToolTip="{loc:T 'The high resolution patch integrated into sFall.'}"
+                        ToolTipService.ShowOnDisabled="True">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{loc:T 'sFall Hi-Res Mode'}" />
+                            <TextBlock
+                                Foreground="{DynamicResource SystemFillColorSuccessBrush}"
+                                Text="{loc:T '  (active)'}"
+                                Visibility="{Binding IsSfallActive, Converter={StaticResource BooleanToVisibility}}" />
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton
+                        x:Name="MashMode"
+                        Grid.Column="1"
+                        GroupName="HiResMode"
+                        IsChecked="{Binding IsMashSelected}"
+                        IsEnabled="{Binding IsMashAvailable}"
+                        ToolTip="{loc:T 'The high resolution patch by Mash (f2_res.dll), loaded through a patch of the game executable.'}"
+                        ToolTipService.ShowOnDisabled="True">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{loc:T 'Hi-Res by Mash'}" />
+                            <TextBlock
+                                Foreground="{DynamicResource SystemFillColorSuccessBrush}"
+                                Text="{loc:T '  (active)'}"
+                                Visibility="{Binding IsMashActive, Converter={StaticResource BooleanToVisibility}}" />
+                        </StackPanel>
+                    </RadioButton>
+                    <Button
+                        Grid.Column="2"
+                        MinWidth="120"
+                        Command="{Binding ApplyCommand}"
+                        Content="{loc:T 'Apply'}"
+                        Style="{DynamicResource AccentButtonStyle}" />
+                </Grid>
+            </StackPanel>
+        </Border>
 
-		<StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,6,0,0">
-			<Button Content="{loc:T 'Open f2_res.ini'}"
-				MinWidth="130"
-				Command="{Binding OpenIniCommand}"
-				ToolTip="{loc:T 'Saves the settings and opens f2_res.ini'}" />
-		</StackPanel>
-	</Grid>
+        <TabControl
+            x:Name="Pages"
+            Grid.Row="1"
+            IsEnabled="{Binding IsAvailable}"
+            ItemTemplate="{StaticResource PageHeaderTemplate}"
+            ItemsSource="{Binding Pages}"
+            SelectedIndex="0" />
+
+        <StackPanel
+            Grid.Row="2"
+            Margin="0,6,0,0"
+            Orientation="Horizontal">
+            <Button
+                MinWidth="130"
+                Command="{Binding OpenIniCommand}"
+                Content="{loc:T 'Open f2_res.ini'}"
+                ToolTip="{loc:T 'Saves the settings and opens f2_res.ini'}" />
+        </StackPanel>
+    </Grid>
+
 </UserControl>
