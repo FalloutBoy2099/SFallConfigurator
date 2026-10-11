@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="SFallConfigurator.Tests/SFallConfigurator.Tests.csproj" />
+  <Project Path="SFallConfigurator/SFallConfigurator.csproj" />
+</Solution>

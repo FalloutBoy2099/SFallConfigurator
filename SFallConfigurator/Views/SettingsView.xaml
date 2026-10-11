@@ -1,0 +1,43 @@
+<UserControl x:Class="SFallConfigurator.Views.SettingsView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:loc="clr-namespace:SFallConfigurator.Localization">
+	<ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,8,0" Focusable="False">
+		<StackPanel Margin="2,8,0,0">
+
+			<Border Margin="0,0,0,6"
+				Padding="10,6,10,8"
+				CornerRadius="6"
+				BorderThickness="1"
+				Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+				BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
+				<StackPanel>
+					<TextBlock Text="{loc:T 'Executable file of the game:'}" Margin="0,0,0,4" />
+					<ComboBox Width="300"
+						HorizontalAlignment="Left"
+						ItemsSource="{Binding Executables}"
+						SelectedItem="{Binding SelectedExecutable}"
+						ToolTip="{loc:T 'The file that starts the game.'}" />
+				</StackPanel>
+			</Border>
+
+			<Border Margin="0,0,0,6"
+				Padding="10,6,10,8"
+				CornerRadius="6"
+				BorderThickness="1"
+				Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+				BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
+				<StackPanel>
+					<ContentControl Content="{Binding ConfigFile}" HorizontalAlignment="Left" />
+					<Button Content="{loc:T 'Open Config'}"
+						HorizontalAlignment="Left"
+						MinWidth="110"
+						Command="{Binding OpenGameConfigCommand}"
+						ToolTip="{loc:T 'Opens the game configuration file.'}" />
+				</StackPanel>
+			</Border>
+
+			<ItemsControl ItemsSource="{Binding GameConfigGroups}" Focusable="False" />
+		</StackPanel>
+	</ScrollViewer>
+</UserControl>

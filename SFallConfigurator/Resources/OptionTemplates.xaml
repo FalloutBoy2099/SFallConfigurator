@@ -1,0 +1,519 @@
+<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:loc="clr-namespace:SFallConfigurator.Localization"
+	xmlns:ctl="clr-namespace:SFallConfigurator.Controls"
+	xmlns:inf="clr-namespace:SFallConfigurator.Infrastructure"
+	xmlns:opt="clr-namespace:SFallConfigurator.Options"
+	xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+	xmlns:vm="clr-namespace:SFallConfigurator.ViewModels">
+
+	<!-- Converters -->
+	<inf:InverseBooleanConverter x:Key="InverseBoolean" />
+	<inf:NullToCollapsedConverter x:Key="NullToCollapsed" />
+	<BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
+
+	<!-- Layout constants: an option occupies one column of the page, a wide one occupies two -->
+	<sys:Double x:Key="OptionWidth">250</sys:Double>
+	<sys:Double x:Key="WideOptionWidth">510</sys:Double>
+	<Thickness x:Key="OptionMargin">0,0,10,4</Thickness>
+
+	<!-- Labels of options that were changed since the program started -->
+	<SolidColorBrush x:Key="ModifiedBrush" Color="#C71585" />
+
+	<!-- Radio buttons driven by the selection of a list box -->
+	<Style x:Key="RadioListItemStyle" TargetType="ListBoxItem">
+		<Setter Property="Focusable" Value="False" />
+		<Setter Property="Margin" Value="0,0,0,4" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="ListBoxItem">
+					<RadioButton
+						IsChecked="{Binding IsSelected, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+						IsEnabled="{TemplateBinding IsEnabled}">
+						<TextBlock Text="{TemplateBinding Content}" />
+					</RadioButton>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<!-- Check box -->
+	<DataTemplate DataType="{x:Type opt:BoolOption}">
+		<CheckBox x:Name="Box"
+			Width="{StaticResource OptionWidth}"
+			Margin="{StaticResource OptionMargin}"
+			IsChecked="{Binding Value}"
+			IsEnabled="{Binding IsEnabled}"
+			ToolTip="{Binding ToolTip}"
+			ToolTipService.ShowOnDisabled="True"
+			ToolTipService.ShowDuration="60000">
+			<TextBlock Text="{Binding Label}" TextWrapping="Wrap" />
+		</CheckBox>
+		<DataTemplate.Triggers>
+			<DataTrigger Binding="{Binding IsModified}" Value="True">
+				<Setter TargetName="Box" Property="Foreground" Value="{StaticResource ModifiedBrush}" />
+			</DataTrigger>
+		</DataTemplate.Triggers>
+	</DataTemplate>
+
+	<!-- Whole number: spin box or slider -->
+	<DataTemplate DataType="{x:Type opt:NumberOption}">
+		<Grid x:Name="Layout"
+			Width="{StaticResource OptionWidth}"
+			Margin="{StaticResource OptionMargin}"
+			ToolTip="{Binding ToolTip}"
+			ToolTipService.ShowOnDisabled="True"
+			ToolTipService.ShowDuration="60000">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+
+			<TextBlock x:Name="Label" Text="{Binding Label}" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,10,0" />
+			<TextBlock x:Name="SliderValue" Grid.Column="1" Text="{Binding ValueText}" Visibility="Collapsed" VerticalAlignment="Center" />
+
+			<ctl:NumberBox x:Name="Spinner"
+				Grid.Column="1"
+				Width="84"
+				Value="{Binding Value, Mode=TwoWay}"
+				Minimum="{Binding Minimum, Mode=OneWay}"
+				Maximum="{Binding Maximum, Mode=OneWay}"
+				Increment="{Binding Increment, Mode=OneWay}"
+				IsEnabled="{Binding IsEnabled}" />
+
+			<Grid x:Name="SliderPanel" Grid.Row="1" Grid.ColumnSpan="2" Visibility="Collapsed" Margin="0,4,0,0">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+				<TextBlock Text="{Binding MinimumLabel}" VerticalAlignment="Center" Margin="0,0,8,0" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+				<Slider Grid.Column="1"
+					Minimum="{Binding Minimum, Mode=OneWay}"
+					Maximum="{Binding Maximum, Mode=OneWay}"
+					Value="{Binding Value, Mode=TwoWay}"
+					IsEnabled="{Binding IsEnabled}"
+					TickFrequency="1"
+					IsSnapToTickEnabled="True"
+					SmallChange="1"
+					LargeChange="5" />
+				<TextBlock Grid.Column="2" Text="{Binding MaximumLabel}" VerticalAlignment="Center" Margin="8,0,0,0" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+			</Grid>
+		</Grid>
+		<DataTemplate.Triggers>
+			<DataTrigger Binding="{Binding Presentation}" Value="Slider">
+				<Setter TargetName="Spinner" Property="Visibility" Value="Collapsed" />
+				<Setter TargetName="SliderValue" Property="Visibility" Value="Visible" />
+				<Setter TargetName="SliderPanel" Property="Visibility" Value="Visible" />
+			</DataTrigger>
+			<DataTrigger Binding="{Binding IsModified}" Value="True">
+				<Setter TargetName="Label" Property="Foreground" Value="{StaticResource ModifiedBrush}" />
+			</DataTrigger>
+			<DataTrigger Binding="{Binding IsEnabled}" Value="False">
+				<Setter TargetName="Label" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+				<Setter TargetName="SliderValue" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+			</DataTrigger>
+		</DataTemplate.Triggers>
+	</DataTemplate>
+
+	<!-- List of choices: drop-down list or radio buttons -->
+	<DataTemplate DataType="{x:Type opt:ChoiceOption}">
+		<StackPanel x:Name="Layout"
+			Width="{StaticResource OptionWidth}"
+			Margin="{StaticResource OptionMargin}"
+			ToolTip="{Binding ToolTip}"
+			ToolTipService.ShowOnDisabled="True"
+			ToolTipService.ShowDuration="60000">
+			<TextBlock x:Name="Label" Text="{Binding Label}" TextWrapping="Wrap" Margin="0,0,0,2" />
+			<ComboBox x:Name="DropDown"
+				HorizontalAlignment="Stretch"
+				ItemsSource="{Binding Items}"
+				SelectedIndex="{Binding SelectedIndex}"
+				IsEnabled="{Binding IsEnabled}" />
+			<ListBox x:Name="Radios"
+				Visibility="Collapsed"
+				Background="Transparent"
+				BorderThickness="0"
+				Padding="0"
+				ItemsSource="{Binding Items}"
+				SelectedIndex="{Binding SelectedIndex}"
+				IsEnabled="{Binding IsEnabled}"
+				ItemContainerStyle="{StaticResource RadioListItemStyle}" />
+		</StackPanel>
+		<DataTemplate.Triggers>
+			<DataTrigger Binding="{Binding Presentation}" Value="RadioButtons">
+				<Setter TargetName="DropDown" Property="Visibility" Value="Collapsed" />
+				<Setter TargetName="Radios" Property="Visibility" Value="Visible" />
+			</DataTrigger>
+			<DataTrigger Binding="{Binding IsModified}" Value="True">
+				<Setter TargetName="Label" Property="Foreground" Value="{StaticResource ModifiedBrush}" />
+			</DataTrigger>
+			<DataTrigger Binding="{Binding IsEnabled}" Value="False">
+				<Setter TargetName="Label" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+			</DataTrigger>
+		</DataTemplate.Triggers>
+	</DataTemplate>
+
+	<!-- Keyboard key -->
+	<DataTemplate DataType="{x:Type opt:KeyOption}">
+		<Grid x:Name="Layout"
+			Width="{StaticResource OptionWidth}"
+			Margin="{StaticResource OptionMargin}"
+			ToolTip="{Binding ToolTip}"
+			ToolTipService.ShowOnDisabled="True"
+			ToolTipService.ShowDuration="60000">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
+			<CheckBox x:Name="Toggle"
+				IsChecked="{Binding IsChecked}"
+				IsEnabled="{Binding IsEnabled}"
+				VerticalAlignment="Center">
+				<TextBlock Text="{Binding Label}" TextWrapping="Wrap" />
+			</CheckBox>
+			<TextBlock x:Name="PlainLabel"
+				Text="{Binding Label}"
+				Visibility="Collapsed"
+				VerticalAlignment="Center"
+				TextWrapping="Wrap" />
+			<Button Grid.Column="1"
+				MinWidth="86"
+				Margin="6,0,0,0"
+				Content="{Binding CodeText}"
+				Command="{Binding ChooseKeyCommand}"
+				IsEnabled="{Binding IsKeyEnabled}"
+				ToolTip="{loc:T 'Assign another key.'}"
+				ToolTipService.ShowOnDisabled="False" />
+		</Grid>
+		<DataTemplate.Triggers>
+			<DataTrigger Binding="{Binding HasToggle}" Value="False">
+				<Setter TargetName="Toggle" Property="Visibility" Value="Collapsed" />
+				<Setter TargetName="PlainLabel" Property="Visibility" Value="Visible" />
+			</DataTrigger>
+			<DataTrigger Binding="{Binding IsModified}" Value="True">
+				<Setter TargetName="Toggle" Property="Foreground" Value="{StaticResource ModifiedBrush}" />
+				<Setter TargetName="PlainLabel" Property="Foreground" Value="{StaticResource ModifiedBrush}" />
+			</DataTrigger>
+			<DataTrigger Binding="{Binding IsEnabled}" Value="False">
+				<Setter TargetName="PlainLabel" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+			</DataTrigger>
+		</DataTemplate.Triggers>
+	</DataTemplate>
+
+	<!-- Text: a text box, or an editable drop-down list when there are suggestions; optional buttons -->
+	<DataTemplate DataType="{x:Type opt:TextOption}">
+		<StackPanel x:Name="Layout"
+			Width="{StaticResource OptionWidth}"
+			Margin="{StaticResource OptionMargin}"
+			ToolTip="{Binding ToolTip}"
+			ToolTipService.ShowOnDisabled="True"
+			ToolTipService.ShowDuration="60000">
+			<TextBlock x:Name="Label" Text="{Binding Label}" TextWrapping="Wrap" Margin="0,0,0,2" />
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+				<TextBox x:Name="Plain"
+					Visibility="Collapsed"
+					Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
+					IsReadOnly="{Binding IsReadOnly}"
+					IsEnabled="{Binding IsEnabled}" />
+				<ComboBox x:Name="Suggested"
+					IsEditable="True"
+					ItemsSource="{Binding Suggestions}"
+					Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
+					IsEnabled="{Binding IsEnabled}" />
+				<Button Grid.Column="1"
+					Margin="6,0,0,0"
+					MinWidth="40"
+					Content="{Binding ActionLabel}"
+					Command="{Binding ActionCommand}"
+					ToolTip="{Binding ActionToolTip}"
+					IsEnabled="{Binding IsEnabled}"
+					Visibility="{Binding ActionCommand, Converter={StaticResource NullToCollapsed}}" />
+				<Button Grid.Column="2"
+					Margin="6,0,0,0"
+					MinWidth="40"
+					FontFamily="{DynamicResource SymbolThemeFontFamily}"
+					Content="{Binding SecondaryActionLabel}"
+					Command="{Binding SecondaryActionCommand}"
+					ToolTip="{Binding SecondaryActionToolTip}"
+					IsEnabled="{Binding IsEnabled}"
+					Visibility="{Binding SecondaryActionCommand, Converter={StaticResource NullToCollapsed}}" />
+			</Grid>
+		</StackPanel>
+		<DataTemplate.Triggers>
+			<DataTrigger Binding="{Binding Suggestions}" Value="{x:Null}">
+				<Setter TargetName="Suggested" Property="Visibility" Value="Collapsed" />
+				<Setter TargetName="Plain" Property="Visibility" Value="Visible" />
+			</DataTrigger>
+			<DataTrigger Binding="{Binding IsModified}" Value="True">
+				<Setter TargetName="Label" Property="Foreground" Value="{StaticResource ModifiedBrush}" />
+			</DataTrigger>
+			<DataTrigger Binding="{Binding IsEnabled}" Value="False">
+				<Setter TargetName="Label" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+			</DataTrigger>
+		</DataTemplate.Triggers>
+	</DataTemplate>
+
+	<!-- Path: a text box with one or two browse buttons, as wide as two options -->
+	<DataTemplate DataType="{x:Type opt:PathOption}">
+		<StackPanel x:Name="Layout"
+			Width="{StaticResource WideOptionWidth}"
+			Margin="{StaticResource OptionMargin}"
+			ToolTip="{Binding ToolTip}"
+			ToolTipService.ShowOnDisabled="True"
+			ToolTipService.ShowDuration="60000">
+			<TextBlock x:Name="Label" Text="{Binding Label}" Margin="0,0,0,2" />
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+				<TextBox Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsEnabled}" />
+				<Button Grid.Column="1"
+					Margin="6,0,0,0"
+					MinWidth="40"
+					Content="{Binding ActionLabel}"
+					Command="{Binding ActionCommand}"
+					ToolTip="{Binding ActionToolTip}"
+					IsEnabled="{Binding IsEnabled}"
+					Visibility="{Binding ActionCommand, Converter={StaticResource NullToCollapsed}}" />
+				<Button Grid.Column="2"
+					Margin="6,0,0,0"
+					MinWidth="40"
+					FontFamily="{DynamicResource SymbolThemeFontFamily}"
+					Content="{Binding SecondaryActionLabel}"
+					Command="{Binding SecondaryActionCommand}"
+					ToolTip="{Binding SecondaryActionToolTip}"
+					IsEnabled="{Binding IsEnabled}"
+					Visibility="{Binding SecondaryActionCommand, Converter={StaticResource NullToCollapsed}}" />
+			</Grid>
+		</StackPanel>
+		<DataTemplate.Triggers>
+			<DataTrigger Binding="{Binding IsModified}" Value="True">
+				<Setter TargetName="Label" Property="Foreground" Value="{StaticResource ModifiedBrush}" />
+			</DataTrigger>
+			<DataTrigger Binding="{Binding IsEnabled}" Value="False">
+				<Setter TargetName="Label" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+			</DataTrigger>
+		</DataTemplate.Triggers>
+	</DataTemplate>
+
+	<!-- Side panel picture of the Hi-Res interface bar -->
+	<DataTemplate DataType="{x:Type opt:BarArtOption}">
+		<Grid Width="{StaticResource WideOptionWidth}"
+			Margin="{StaticResource OptionMargin}"
+			ToolTip="{Binding ToolTip}"
+			ToolTipService.ShowOnDisabled="True"
+			ToolTipService.ShowDuration="60000">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
+			<StackPanel>
+				<TextBlock x:Name="Label" Text="{Binding Label}" Margin="0,0,0,2" />
+				<ComboBox ItemsSource="{Binding Presets}"
+					SelectedIndex="{Binding PresetIndex}"
+					IsEnabled="{Binding IsEnabled}"
+					HorizontalAlignment="Stretch" />
+				<StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+					<Button Content="&lt;" Width="40" Command="{Binding DecrementCommand}" />
+					<TextBlock Text="{Binding Art}" Width="48" TextAlignment="Center" VerticalAlignment="Center" />
+					<Button Content="&gt;" Width="40" Command="{Binding IncrementCommand}" />
+				</StackPanel>
+			</StackPanel>
+			<Border Grid.Column="1" Margin="16,0,0,0" CornerRadius="4" ClipToBounds="True"
+				BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+				<Image Source="{Binding PreviewImage}" Width="150" Height="87" Stretch="Fill" />
+			</Border>
+		</Grid>
+		<DataTemplate.Triggers>
+			<DataTrigger Binding="{Binding IsModified}" Value="True">
+				<Setter TargetName="Label" Property="Foreground" Value="{StaticResource ModifiedBrush}" />
+			</DataTrigger>
+		</DataTemplate.Triggers>
+	</DataTemplate>
+
+	<!-- Screen resolution of sfall -->
+	<DataTemplate DataType="{x:Type vm:SfallResolutionEditor}">
+		<Grid Width="{StaticResource WideOptionWidth}" Margin="{StaticResource OptionMargin}">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="140" />
+			</Grid.ColumnDefinitions>
+			<StackPanel>
+				<StackPanel Orientation="Horizontal">
+					<ctl:NumberBox Width="84"
+						Value="{Binding Width.Value, Mode=TwoWay}"
+						Minimum="{Binding Width.Minimum, Mode=OneWay}"
+						Maximum="{Binding Width.Maximum, Mode=OneWay}"
+						Increment="{Binding Width.Increment, Mode=OneWay}"
+						ToolTip="{loc:T 'Width'}" />
+					<TextBlock Text="X" VerticalAlignment="Center" Margin="10,0" />
+					<ctl:NumberBox Width="84"
+						Value="{Binding Height.Value, Mode=TwoWay}"
+						Minimum="{Binding Height.Minimum, Mode=OneWay}"
+						Maximum="{Binding Height.Maximum, Mode=OneWay}"
+						Increment="{Binding Height.Increment, Mode=OneWay}"
+						ToolTip="{loc:T 'Height'}" />
+				</StackPanel>
+				<CheckBox Content="{loc:T 'Also set the resolution of the Hi-Res patch'}"
+					Margin="0,8,0,0"
+					IsChecked="{Binding SetHiResResolution}"
+					IsEnabled="{Binding IsHiResAvailable}"
+					ToolTip="{loc:T 'Also set the chosen resolution in the Hi-Res patch settings.'}" />
+				<CheckBox Content="{loc:T 'Scaling X2 (sFall &amp; HRP)'}"
+					IsChecked="{Binding ScaleX2}"
+					IsEnabled="{Binding IsScaleAvailable}" />
+				<TextBlock Text="{Binding Hint}"
+					Margin="0,6,0,0"
+					TextWrapping="Wrap"
+					Foreground="{StaticResource ModifiedBrush}"
+					Visibility="{Binding NeedsResolution, Converter={StaticResource BooleanToVisibility}}" />
+			</StackPanel>
+			<StackPanel Grid.Column="1">
+				<TextBlock Text="{loc:T 'Available resolutions:'}" Margin="0,0,0,2" />
+				<ListBox Height="150"
+					ItemsSource="{Binding Resolutions.Items}"
+					SelectedItem="{Binding Resolutions.Selected}" />
+			</StackPanel>
+		</Grid>
+	</DataTemplate>
+
+	<!-- Screen resolution of the Hi-Res patch -->
+	<DataTemplate DataType="{x:Type vm:HiResResolutionEditor}">
+		<Grid Width="{StaticResource WideOptionWidth}" Margin="{StaticResource OptionMargin}">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="140" />
+			</Grid.ColumnDefinitions>
+			<StackPanel>
+				<StackPanel Orientation="Horizontal">
+					<ctl:NumberBox Width="84"
+						Value="{Binding Width.Value, Mode=TwoWay}"
+						Minimum="{Binding Width.Minimum, Mode=OneWay}"
+						Maximum="{Binding Width.Maximum, Mode=OneWay}"
+						Increment="{Binding Width.Increment, Mode=OneWay}"
+						IsEnabled="{Binding Width.IsEnabled}"
+						ToolTip="{loc:T 'Width'}" />
+					<TextBlock Text="X" VerticalAlignment="Center" Margin="10,0" />
+					<ctl:NumberBox Width="84"
+						Value="{Binding Height.Value, Mode=TwoWay}"
+						Minimum="{Binding Height.Minimum, Mode=OneWay}"
+						Maximum="{Binding Height.Maximum, Mode=OneWay}"
+						Increment="{Binding Height.Increment, Mode=OneWay}"
+						IsEnabled="{Binding Height.IsEnabled}"
+						ToolTip="{loc:T 'Height'}" />
+				</StackPanel>
+				<CheckBox Margin="0,8,0,0"
+					IsChecked="{Binding ScaleX2.Value}"
+					IsEnabled="{Binding ScaleX2.IsEnabled}">
+					<TextBlock Text="{Binding ScaleX2.Label}" />
+				</CheckBox>
+			</StackPanel>
+			<StackPanel Grid.Column="1">
+				<TextBlock Text="{loc:T 'Available resolutions:'}" Margin="0,0,0,4" ToolTip="{loc:T 'Resolutions available on this system.'}" />
+				<ListBox Height="150"
+					ItemsSource="{Binding Resolutions.Items}"
+					SelectedItem="{Binding Resolutions.Selected}" />
+			</StackPanel>
+		</Grid>
+	</DataTemplate>
+
+	<!-- Paragraph of explanation -->
+	<DataTemplate DataType="{x:Type opt:OptionNote}">
+		<TextBlock Width="{StaticResource WideOptionWidth}"
+			Margin="{StaticResource OptionMargin}"
+			Text="{Binding Text}"
+			TextWrapping="Wrap"
+			Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+	</DataTemplate>
+
+	<!-- Read-only text with a button -->
+	<DataTemplate DataType="{x:Type vm:FileDisplayItem}">
+		<StackPanel Width="{StaticResource WideOptionWidth}" Margin="{StaticResource OptionMargin}">
+			<TextBlock Text="{Binding Label}" Margin="0,0,0,2" />
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+				<TextBox Text="{Binding Text, Mode=OneWay}" IsReadOnly="True" />
+				<Button Grid.Column="1"
+					Margin="6,0,0,0"
+					MinWidth="40"
+					Content="{Binding ActionLabel}"
+					Command="{Binding ActionCommand}"
+					ToolTip="{Binding ToolTip}" />
+			</Grid>
+		</StackPanel>
+	</DataTemplate>
+
+	<!-- Button -->
+	<DataTemplate DataType="{x:Type vm:CommandItem}">
+		<Button Margin="{StaticResource OptionMargin}"
+			HorizontalAlignment="Left"
+			Content="{Binding Label}"
+			Command="{Binding Command}"
+			ToolTip="{Binding ToolTip}" />
+	</DataTemplate>
+
+	<!-- Check box applied by a handler -->
+	<DataTemplate DataType="{x:Type vm:ToggleItem}">
+		<CheckBox Width="{StaticResource OptionWidth}"
+			Margin="{StaticResource OptionMargin}"
+			IsChecked="{Binding IsChecked}"
+			IsEnabled="{Binding IsEnabled}"
+			ToolTip="{Binding ToolTip}"
+			ToolTipService.ShowOnDisabled="True"
+			ToolTipService.ShowDuration="60000">
+			<TextBlock Text="{Binding Label}" TextWrapping="Wrap" />
+		</CheckBox>
+	</DataTemplate>
+
+	<!-- A titled card of options -->
+	<DataTemplate DataType="{x:Type opt:OptionGroup}">
+		<Border Margin="0,0,0,6"
+			Padding="10,6,0,1"
+			CornerRadius="6"
+			BorderThickness="1"
+			Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+			BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
+			<StackPanel>
+				<TextBlock Text="{Binding Title}"
+					FontWeight="SemiBold"
+					Margin="0,0,0,4"
+					Visibility="{Binding Title, Converter={StaticResource NullToCollapsed}}" />
+				<ItemsControl ItemsSource="{Binding Items}" Focusable="False">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<WrapPanel />
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+				</ItemsControl>
+			</StackPanel>
+		</Border>
+	</DataTemplate>
+
+	<!-- A page of cards -->
+	<DataTemplate DataType="{x:Type vm:OptionPage}">
+		<ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,8,0" Focusable="False">
+			<ItemsControl ItemsSource="{Binding Groups}" Margin="1,6,0,0" Focusable="False" />
+		</ScrollViewer>
+	</DataTemplate>
+
+	<!-- Tab header of a page -->
+	<DataTemplate x:Key="PageHeaderTemplate">
+		<TextBlock Text="{Binding Header}" />
+	</DataTemplate>
+</ResourceDictionary>

@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net10.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<LangVersion>latest</LangVersion>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<AssemblyName>SFallConfigurator</AssemblyName>
+		<RootNamespace>SFallConfigurator</RootNamespace>
+		<ApplicationIcon>Resources\icon.ico</ApplicationIcon>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<Product>SFallConfigurator</Product>
+		<AssemblyTitle>SFallConfigurator</AssemblyTitle>
+		<Copyright>Copyright © Mr.Stalin 2015 - 2026</Copyright>
+		<Version>2026.10.7</Version>
+		<AssemblyVersion>2026.10.7.0</AssemblyVersion>
+		<FileVersion>2026.10.7.0</FileVersion>
+		<InformationalVersion>2026.10.7.0</InformationalVersion>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<!-- The built-in Fluent theme (ThemeMode) is flagged as experimental in the WPF reference assemblies. -->
+		<NoWarn>$(NoWarn);WPF0001</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="SFallConfigurator.Tests" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Localization\*.json" LogicalName="SFallConfigurator.Localization.%(Filename)%(Extension)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Resource Include="Resources\icon.ico" />
+		<Resource Include="Resources\Black.png" />
+		<Resource Include="Resources\Leather.png" />
+		<Resource Include="Resources\Metal.png" />
+	</ItemGroup>
+
+</Project>
