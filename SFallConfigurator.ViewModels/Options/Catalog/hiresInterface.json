@@ -1,0 +1,123 @@
+{
+  "id": "hiresInterface",
+  "title": "Interface",
+  "groups": [
+    {
+      "title": "Interface bar",
+      "items": [
+        {
+          "type": "bool",
+          "id": "barMode",
+          "source": "hires",
+          "section": "IFACE",
+          "key": "IFACE_BAR_MODE",
+          "label": "IFACE_BAR_MODE",
+          "toolTip": "Extends the lower edge of the map view down to the bottom of the game window;\nthe interface bar is then drawn over the map, without side panels at the bottom.\nThe bar can be hidden by holding the key assigned to the HideInterfaceKey option (file sfall-mods.ini).\n",
+          "properties": {
+            "defaultValue": "0"
+          }
+        },
+        {
+          "type": "number",
+          "id": "barWidth",
+          "source": "hires",
+          "section": "IFACE",
+          "key": "IFACE_BAR_WIDTH",
+          "label": "IFACE_BAR_WIDTH:",
+          "minimum": 640,
+          "maximum": 10000,
+          "properties": {
+            "defaultValue": "640",
+            "increment": 10
+          }
+        }
+      ]
+    },
+    {
+      "title": "Side panels",
+      "items": [
+        {
+          "type": "barArt",
+          "id": "sideArt",
+          "source": "hires",
+          "section": "IFACE",
+          "key": "IFACE_BAR_SIDE_ART",
+          "label": "IFACE_BAR_SIDE_ART",
+          "toolTip": "Picture of the side panels."
+        },
+        {
+          "type": "bool",
+          "id": "sidesOrientation",
+          "source": "hires",
+          "section": "IFACE",
+          "key": "IFACE_BAR_SIDES_ORI",
+          "label": "IFACE_BAR_SIDES_ORI",
+          "properties": {
+            "defaultValue": "0"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Alternate ammo meter",
+      "items": [
+        {
+          "type": "choice",
+          "id": "ammoMeter",
+          "source": "hires",
+          "section": "IFACE",
+          "key": "ALTERNATE_AMMO_METRE",
+          "label": "ALTERNATE_AMMO_METRE",
+          "toolTip": "Type of the alternative ammo meter.\n\nDisabled - the standard one.\nDivides colour - splits the meter into several colored sections.",
+          "items": [
+            "Disabled",
+            "Single colour",
+            "Changes colour",
+            "Divides colour"
+          ],
+          "properties": {
+            "defaultValue": "0"
+          }
+        },
+        {
+          "type": "number",
+          "id": "lightColor",
+          "source": "hires",
+          "section": "IFACE",
+          "key": "ALTERNATE_AMMO_LIGHT",
+          "label": "Light color:",
+          "minimum": 0,
+          "maximum": 255,
+          "properties": {
+            "defaultValue": "196",
+            "presentation": "Palette"
+          },
+          "hidden": true
+        },
+        {
+          "type": "number",
+          "id": "darkColor",
+          "source": "hires",
+          "section": "IFACE",
+          "key": "ALTERNATE_AMMO_DARK",
+          "label": "Dark color:",
+          "minimum": 0,
+          "maximum": 255,
+          "properties": {
+            "defaultValue": "75",
+            "presentation": "Palette"
+          },
+          "hidden": true
+        },
+        {
+          "type": "column",
+          "id": "ammoColors",
+          "members": [
+            "lightColor",
+            "darkColor"
+          ]
+        }
+      ]
+    }
+  ]
+}

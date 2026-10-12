@@ -1,40 +1,47 @@
-<ResourceDictionary
+﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ctl="clr-namespace:SFallConfigurator.Controls"
     xmlns:inf="clr-namespace:SFallConfigurator.Infrastructure"
     xmlns:loc="clr-namespace:SFallConfigurator.Localization"
-    xmlns:opt="clr-namespace:SFallConfigurator.Options"
+    xmlns:opt="clr-namespace:SFallConfigurator.Options;assembly=SFallConfigurator.ViewModels"
     xmlns:sys="clr-namespace:System;assembly=System.Runtime"
-    xmlns:vm="clr-namespace:SFallConfigurator.ViewModels">
+    xmlns:vm="clr-namespace:SFallConfigurator.ViewModels;assembly=SFallConfigurator.ViewModels">
 
     <!--  Converters  -->
     <inf:InverseBooleanConverter x:Key="InverseBoolean" />
     <inf:NullToCollapsedConverter x:Key="NullToCollapsed" />
     <BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
+    <inf:RgbToBrushConverter x:Key="RgbToBrush" />
 
     <!--  Layout constants: an option occupies one column of the page, a wide one occupies two  -->
-    <sys:Double x:Key="OptionWidth">250</sys:Double>
-    <sys:Double x:Key="WideOptionWidth">510</sys:Double>
-    <Thickness x:Key="OptionMargin">0,0,10,4</Thickness>
+    <sys:Double x:Key="OptionWidth">280</sys:Double>
+    <sys:Double x:Key="WideOptionWidth">584</sys:Double>
+    <Thickness x:Key="OptionMargin">0,0,24,4</Thickness>
 
     <!--  Labels of options that were changed since the program started  -->
     <SolidColorBrush x:Key="ModifiedBrush" Color="#C71585" />
 
-    <!--  Radio buttons driven by the selection of a list box  -->
-    <Style x:Key="RadioListItemStyle" TargetType="ListBoxItem">
-        <Setter Property="Focusable" Value="False" />
-        <Setter Property="Margin" Value="0,0,0,4" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="ListBoxItem">
-                    <RadioButton IsChecked="{Binding IsSelected, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" IsEnabled="{TemplateBinding IsEnabled}">
-                        <TextBlock Text="{TemplateBinding Content}" />
-                    </RadioButton>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
+    <!--  Background of the option that a search showed  -->
+    <SolidColorBrush x:Key="HighlightBrush" Color="#55FFC000" />
+
+    <!--  The menu of an option: its history, its default value and the value that was saved  -->
+    <ContextMenu x:Key="OptionMenu" FontSize="12">
+        <MenuItem Command="{Binding UndoCommand}" Header="{loc:T 'Undo'}" />
+        <MenuItem Command="{Binding RedoCommand}" Header="{loc:T 'Redo'}" />
+        <Separator />
+        <MenuItem
+            Command="{Binding ResetCommand}"
+            Header="{loc:T 'Reset to the default value'}"
+            ToolTip="{Binding DefaultText}"
+            Visibility="{Binding HasDefault, Converter={StaticResource BooleanToVisibility}}" />
+        <MenuItem Command="{Binding RevertCommand}" Header="{loc:T 'Restore the saved value'}" />
+        <Separator Visibility="{Binding CanAddKey, Converter={StaticResource BooleanToVisibility}}" />
+        <MenuItem
+            Command="{Binding AddKeyCommand}"
+            Header="{loc:T 'Add the key to the file'}"
+            Visibility="{Binding CanAddKey, Converter={StaticResource BooleanToVisibility}}" />
+    </ContextMenu>
 
     <!--  Check box  -->
     <DataTemplate DataType="{x:Type opt:BoolOption}">
@@ -42,9 +49,11 @@
             x:Name="Box"
             Width="{StaticResource OptionWidth}"
             Margin="{StaticResource OptionMargin}"
+            ContextMenu="{StaticResource OptionMenu}"
+            ContextMenuService.ShowOnDisabled="True"
             IsChecked="{Binding Value}"
             IsEnabled="{Binding IsEnabled}"
-            ToolTip="{Binding ToolTip}"
+            ToolTip="{Binding HelpText}"
             ToolTipService.ShowDuration="60000"
             ToolTipService.ShowOnDisabled="True">
             <TextBlock Text="{Binding Label}" TextWrapping="Wrap" />
@@ -52,6 +61,10 @@
         <DataTemplate.Triggers>
             <DataTrigger Binding="{Binding IsModified}" Value="True">
                 <Setter TargetName="Box" Property="Foreground" Value="{StaticResource ModifiedBrush}" />
+                <Setter TargetName="Box" Property="FontStyle" Value="Italic" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsHighlighted}" Value="True">
+                <Setter TargetName="Box" Property="Background" Value="{StaticResource HighlightBrush}" />
             </DataTrigger>
         </DataTemplate.Triggers>
     </DataTemplate>
@@ -62,11 +75,14 @@
             x:Name="Layout"
             Width="{StaticResource OptionWidth}"
             Margin="{StaticResource OptionMargin}"
-            ToolTip="{Binding ToolTip}"
+            ContextMenu="{StaticResource OptionMenu}"
+            ContextMenuService.ShowOnDisabled="True"
+            ToolTip="{Binding HelpText}"
             ToolTipService.ShowDuration="60000"
             ToolTipService.ShowOnDisabled="True">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -87,10 +103,65 @@
                 Text="{Binding ValueText}"
                 Visibility="Collapsed" />
 
+            <!--  The color of a palette index: the button opens the colors of the game  -->
+            <ToggleButton
+                x:Name="ColorButton"
+                Grid.Column="2"
+                Width="32"
+                Margin="6,0,0,0"
+                Padding="0"
+                AutomationProperties.Name="{Binding Label}"
+                IsChecked="{Binding IsPaletteOpen, Mode=TwoWay}"
+                IsEnabled="{Binding IsEnabled}"
+                Visibility="Collapsed">
+                <Border
+                    Width="20"
+                    Height="14"
+                    Background="{Binding ColorRgb, Converter={StaticResource RgbToBrush}}"
+                    BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                    BorderThickness="1" />
+            </ToggleButton>
+            <Popup
+                IsOpen="{Binding IsPaletteOpen, Mode=TwoWay}"
+                Placement="Bottom"
+                PlacementTarget="{Binding ElementName=ColorButton}"
+                StaysOpen="False">
+                <Border
+                    Padding="6"
+                    Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4">
+                    <ItemsControl Width="224" ItemsSource="{Binding PaletteEntries}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="16" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button
+                                    Width="14"
+                                    Height="14"
+                                    MinHeight="0"
+                                    Margin="0"
+                                    Padding="0"
+                                    Background="{Binding Rgb, Converter={StaticResource RgbToBrush}}"
+                                    BorderThickness="0"
+                                    Command="{Binding SelectCommand}"
+                                    Focusable="False"
+                                    ToolTip="{Binding Index}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+            </Popup>
+
             <ctl:NumberBox
                 x:Name="Spinner"
                 Grid.Column="1"
                 Width="84"
+                AutomationProperties.Name="{Binding Label}"
                 Increment="{Binding Increment, Mode=OneWay}"
                 IsEnabled="{Binding IsEnabled}"
                 Maximum="{Binding Maximum, Mode=OneWay}"
@@ -115,6 +186,7 @@
                     Text="{Binding MinimumLabel}" />
                 <Slider
                     Grid.Column="1"
+                    AutomationProperties.Name="{Binding Label}"
                     IsEnabled="{Binding IsEnabled}"
                     IsSnapToTickEnabled="True"
                     LargeChange="5"
@@ -132,6 +204,9 @@
             </Grid>
         </Grid>
         <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding Presentation}" Value="Palette">
+                <Setter TargetName="ColorButton" Property="Visibility" Value="Visible" />
+            </DataTrigger>
             <DataTrigger Binding="{Binding Presentation}" Value="Slider">
                 <Setter TargetName="Spinner" Property="Visibility" Value="Collapsed" />
                 <Setter TargetName="SliderValue" Property="Visibility" Value="Visible" />
@@ -139,10 +214,14 @@
             </DataTrigger>
             <DataTrigger Binding="{Binding IsModified}" Value="True">
                 <Setter TargetName="Label" Property="Foreground" Value="{StaticResource ModifiedBrush}" />
+                <Setter TargetName="Label" Property="FontStyle" Value="Italic" />
             </DataTrigger>
             <DataTrigger Binding="{Binding IsEnabled}" Value="False">
                 <Setter TargetName="Label" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                 <Setter TargetName="SliderValue" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsHighlighted}" Value="True">
+                <Setter TargetName="Layout" Property="Background" Value="{StaticResource HighlightBrush}" />
             </DataTrigger>
         </DataTemplate.Triggers>
     </DataTemplate>
@@ -153,7 +232,9 @@
             x:Name="Layout"
             Width="{StaticResource OptionWidth}"
             Margin="{StaticResource OptionMargin}"
-            ToolTip="{Binding ToolTip}"
+            ContextMenu="{StaticResource OptionMenu}"
+            ContextMenuService.ShowOnDisabled="True"
+            ToolTip="{Binding HelpText}"
             ToolTipService.ShowDuration="60000"
             ToolTipService.ShowOnDisabled="True">
             <TextBlock
@@ -164,30 +245,21 @@
             <ComboBox
                 x:Name="DropDown"
                 HorizontalAlignment="Stretch"
+                AutomationProperties.Name="{Binding Label}"
                 IsEnabled="{Binding IsEnabled}"
                 ItemsSource="{Binding Items}"
                 SelectedIndex="{Binding SelectedIndex}" />
-            <ListBox
-                x:Name="Radios"
-                Padding="0"
-                Background="Transparent"
-                BorderThickness="0"
-                IsEnabled="{Binding IsEnabled}"
-                ItemContainerStyle="{StaticResource RadioListItemStyle}"
-                ItemsSource="{Binding Items}"
-                SelectedIndex="{Binding SelectedIndex}"
-                Visibility="Collapsed" />
         </StackPanel>
         <DataTemplate.Triggers>
-            <DataTrigger Binding="{Binding Presentation}" Value="RadioButtons">
-                <Setter TargetName="DropDown" Property="Visibility" Value="Collapsed" />
-                <Setter TargetName="Radios" Property="Visibility" Value="Visible" />
-            </DataTrigger>
             <DataTrigger Binding="{Binding IsModified}" Value="True">
                 <Setter TargetName="Label" Property="Foreground" Value="{StaticResource ModifiedBrush}" />
+                <Setter TargetName="Label" Property="FontStyle" Value="Italic" />
             </DataTrigger>
             <DataTrigger Binding="{Binding IsEnabled}" Value="False">
                 <Setter TargetName="Label" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsHighlighted}" Value="True">
+                <Setter TargetName="Layout" Property="Background" Value="{StaticResource HighlightBrush}" />
             </DataTrigger>
         </DataTemplate.Triggers>
     </DataTemplate>
@@ -198,7 +270,9 @@
             x:Name="Layout"
             Width="{StaticResource OptionWidth}"
             Margin="{StaticResource OptionMargin}"
-            ToolTip="{Binding ToolTip}"
+            ContextMenu="{StaticResource OptionMenu}"
+            ContextMenuService.ShowOnDisabled="True"
+            ToolTip="{Binding HelpText}"
             ToolTipService.ShowDuration="60000"
             ToolTipService.ShowOnDisabled="True">
             <Grid.ColumnDefinitions>
@@ -222,6 +296,7 @@
                 Grid.Column="1"
                 MinWidth="86"
                 Margin="6,0,0,0"
+                AutomationProperties.Name="{Binding Label}"
                 Command="{Binding ChooseKeyCommand}"
                 Content="{Binding CodeText}"
                 IsEnabled="{Binding IsKeyEnabled}"
@@ -235,10 +310,15 @@
             </DataTrigger>
             <DataTrigger Binding="{Binding IsModified}" Value="True">
                 <Setter TargetName="Toggle" Property="Foreground" Value="{StaticResource ModifiedBrush}" />
+                <Setter TargetName="Toggle" Property="FontStyle" Value="Italic" />
                 <Setter TargetName="PlainLabel" Property="Foreground" Value="{StaticResource ModifiedBrush}" />
+                <Setter TargetName="PlainLabel" Property="FontStyle" Value="Italic" />
             </DataTrigger>
             <DataTrigger Binding="{Binding IsEnabled}" Value="False">
                 <Setter TargetName="PlainLabel" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsHighlighted}" Value="True">
+                <Setter TargetName="Layout" Property="Background" Value="{StaticResource HighlightBrush}" />
             </DataTrigger>
         </DataTemplate.Triggers>
     </DataTemplate>
@@ -249,7 +329,9 @@
             x:Name="Layout"
             Width="{StaticResource OptionWidth}"
             Margin="{StaticResource OptionMargin}"
-            ToolTip="{Binding ToolTip}"
+            ContextMenu="{StaticResource OptionMenu}"
+            ContextMenuService.ShowOnDisabled="True"
+            ToolTip="{Binding HelpText}"
             ToolTipService.ShowDuration="60000"
             ToolTipService.ShowOnDisabled="True">
             <TextBlock
@@ -265,12 +347,14 @@
                 </Grid.ColumnDefinitions>
                 <TextBox
                     x:Name="Plain"
+                    AutomationProperties.Name="{Binding Label}"
                     IsEnabled="{Binding IsEnabled}"
                     IsReadOnly="{Binding IsReadOnly}"
                     Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
                     Visibility="Collapsed" />
                 <ComboBox
                     x:Name="Suggested"
+                    AutomationProperties.Name="{Binding Label}"
                     IsEditable="True"
                     IsEnabled="{Binding IsEnabled}"
                     ItemsSource="{Binding Suggestions}"
@@ -279,6 +363,7 @@
                     Grid.Column="1"
                     MinWidth="40"
                     Margin="6,0,0,0"
+                    AutomationProperties.Name="{Binding ActionToolTip}"
                     Command="{Binding ActionCommand}"
                     Content="{Binding ActionLabel}"
                     IsEnabled="{Binding IsEnabled}"
@@ -288,6 +373,7 @@
                     Grid.Column="2"
                     MinWidth="40"
                     Margin="6,0,0,0"
+                    AutomationProperties.Name="{Binding SecondaryActionToolTip}"
                     Command="{Binding SecondaryActionCommand}"
                     Content="{Binding SecondaryActionLabel}"
                     FontFamily="{DynamicResource SymbolThemeFontFamily}"
@@ -303,9 +389,13 @@
             </DataTrigger>
             <DataTrigger Binding="{Binding IsModified}" Value="True">
                 <Setter TargetName="Label" Property="Foreground" Value="{StaticResource ModifiedBrush}" />
+                <Setter TargetName="Label" Property="FontStyle" Value="Italic" />
             </DataTrigger>
             <DataTrigger Binding="{Binding IsEnabled}" Value="False">
                 <Setter TargetName="Label" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsHighlighted}" Value="True">
+                <Setter TargetName="Layout" Property="Background" Value="{StaticResource HighlightBrush}" />
             </DataTrigger>
         </DataTemplate.Triggers>
     </DataTemplate>
@@ -316,7 +406,9 @@
             x:Name="Layout"
             Width="{StaticResource WideOptionWidth}"
             Margin="{StaticResource OptionMargin}"
-            ToolTip="{Binding ToolTip}"
+            ContextMenu="{StaticResource OptionMenu}"
+            ContextMenuService.ShowOnDisabled="True"
+            ToolTip="{Binding HelpText}"
             ToolTipService.ShowDuration="60000"
             ToolTipService.ShowOnDisabled="True">
             <TextBlock
@@ -329,11 +421,15 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBox IsEnabled="{Binding IsEnabled}" Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox
+                    AutomationProperties.Name="{Binding Label}"
+                    IsEnabled="{Binding IsEnabled}"
+                    Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}" />
                 <Button
                     Grid.Column="1"
                     MinWidth="40"
                     Margin="6,0,0,0"
+                    AutomationProperties.Name="{Binding ActionToolTip}"
                     Command="{Binding ActionCommand}"
                     Content="{Binding ActionLabel}"
                     IsEnabled="{Binding IsEnabled}"
@@ -343,6 +439,7 @@
                     Grid.Column="2"
                     MinWidth="40"
                     Margin="6,0,0,0"
+                    AutomationProperties.Name="{Binding SecondaryActionToolTip}"
                     Command="{Binding SecondaryActionCommand}"
                     Content="{Binding SecondaryActionLabel}"
                     FontFamily="{DynamicResource SymbolThemeFontFamily}"
@@ -354,9 +451,13 @@
         <DataTemplate.Triggers>
             <DataTrigger Binding="{Binding IsModified}" Value="True">
                 <Setter TargetName="Label" Property="Foreground" Value="{StaticResource ModifiedBrush}" />
+                <Setter TargetName="Label" Property="FontStyle" Value="Italic" />
             </DataTrigger>
             <DataTrigger Binding="{Binding IsEnabled}" Value="False">
                 <Setter TargetName="Label" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsHighlighted}" Value="True">
+                <Setter TargetName="Layout" Property="Background" Value="{StaticResource HighlightBrush}" />
             </DataTrigger>
         </DataTemplate.Triggers>
     </DataTemplate>
@@ -364,9 +465,12 @@
     <!--  Side panel picture of the Hi-Res interface bar  -->
     <DataTemplate DataType="{x:Type opt:BarArtOption}">
         <Grid
+            x:Name="Layout"
             Width="{StaticResource WideOptionWidth}"
             Margin="{StaticResource OptionMargin}"
-            ToolTip="{Binding ToolTip}"
+            ContextMenu="{StaticResource OptionMenu}"
+            ContextMenuService.ShowOnDisabled="True"
+            ToolTip="{Binding HelpText}"
             ToolTipService.ShowDuration="60000"
             ToolTipService.ShowOnDisabled="True">
             <Grid.ColumnDefinitions>
@@ -380,12 +484,14 @@
                     Text="{Binding Label}" />
                 <ComboBox
                     HorizontalAlignment="Stretch"
+                    AutomationProperties.Name="{Binding Label}"
                     IsEnabled="{Binding IsEnabled}"
                     ItemsSource="{Binding Presets}"
                     SelectedIndex="{Binding PresetIndex}" />
                 <StackPanel Margin="0,8,0,0" Orientation="Horizontal">
                     <Button
                         Width="40"
+                        AutomationProperties.Name="{loc:T 'Previous'}"
                         Command="{Binding DecrementCommand}"
                         Content="&lt;" />
                     <TextBlock
@@ -395,6 +501,7 @@
                         TextAlignment="Center" />
                     <Button
                         Width="40"
+                        AutomationProperties.Name="{loc:T 'Next'}"
                         Command="{Binding IncrementCommand}"
                         Content="&gt;" />
                 </StackPanel>
@@ -416,6 +523,10 @@
         <DataTemplate.Triggers>
             <DataTrigger Binding="{Binding IsModified}" Value="True">
                 <Setter TargetName="Label" Property="Foreground" Value="{StaticResource ModifiedBrush}" />
+                <Setter TargetName="Label" Property="FontStyle" Value="Italic" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsHighlighted}" Value="True">
+                <Setter TargetName="Layout" Property="Background" Value="{StaticResource HighlightBrush}" />
             </DataTrigger>
         </DataTemplate.Triggers>
     </DataTemplate>
@@ -431,7 +542,9 @@
                 <StackPanel Orientation="Horizontal">
                     <ctl:NumberBox
                         Width="84"
+                        AutomationProperties.Name="{loc:T 'Width'}"
                         Increment="{Binding Width.Increment, Mode=OneWay}"
+                        IsEnabled="{Binding Width.IsEnabled}"
                         Maximum="{Binding Width.Maximum, Mode=OneWay}"
                         Minimum="{Binding Width.Minimum, Mode=OneWay}"
                         ToolTip="{loc:T 'Width'}"
@@ -442,7 +555,9 @@
                         Text="X" />
                     <ctl:NumberBox
                         Width="84"
+                        AutomationProperties.Name="{loc:T 'Height'}"
                         Increment="{Binding Height.Increment, Mode=OneWay}"
+                        IsEnabled="{Binding Height.IsEnabled}"
                         Maximum="{Binding Height.Maximum, Mode=OneWay}"
                         Minimum="{Binding Height.Minimum, Mode=OneWay}"
                         ToolTip="{loc:T 'Height'}"
@@ -486,6 +601,7 @@
                 <StackPanel Orientation="Horizontal">
                     <ctl:NumberBox
                         Width="84"
+                        AutomationProperties.Name="{loc:T 'Width'}"
                         Increment="{Binding Width.Increment, Mode=OneWay}"
                         IsEnabled="{Binding Width.IsEnabled}"
                         Maximum="{Binding Width.Maximum, Mode=OneWay}"
@@ -498,6 +614,7 @@
                         Text="X" />
                     <ctl:NumberBox
                         Width="84"
+                        AutomationProperties.Name="{loc:T 'Height'}"
                         Increment="{Binding Height.Increment, Mode=OneWay}"
                         IsEnabled="{Binding Height.IsEnabled}"
                         Maximum="{Binding Height.Maximum, Mode=OneWay}"
@@ -544,11 +661,15 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBox IsReadOnly="True" Text="{Binding Text, Mode=OneWay}" />
+                <TextBox
+                    AutomationProperties.Name="{Binding Label}"
+                    IsReadOnly="True"
+                    Text="{Binding Text, Mode=OneWay}" />
                 <Button
                     Grid.Column="1"
                     MinWidth="40"
                     Margin="6,0,0,0"
+                    AutomationProperties.Name="{Binding ToolTip}"
                     Command="{Binding ActionCommand}"
                     Content="{Binding ActionLabel}"
                     ToolTip="{Binding ToolTip}" />
@@ -578,6 +699,11 @@
             ToolTipService.ShowOnDisabled="True">
             <TextBlock Text="{Binding Label}" TextWrapping="Wrap" />
         </CheckBox>
+    </DataTemplate>
+
+    <!--  Options one under the other, in the space of one option  -->
+    <DataTemplate DataType="{x:Type opt:OptionColumn}">
+        <ItemsControl Focusable="False" ItemsSource="{Binding Items}" />
     </DataTemplate>
 
     <!--  A titled card of options  -->

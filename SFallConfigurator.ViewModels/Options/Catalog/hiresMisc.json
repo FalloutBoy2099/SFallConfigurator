@@ -1,0 +1,89 @@
+{
+  "id": "hiresMisc",
+  "title": "Misc",
+  "groups": [
+    {
+      "title": "Options",
+      "items": [
+        {
+          "type": "bool",
+          "id": "recalculateFade",
+          "source": "hires",
+          "section": "OTHER_SETTINGS",
+          "key": "FADE_TIME_RECALCULATE_ON_FADE",
+          "label": "FADE_TIME_RECALCULATE_ON_FADE",
+          "properties": {
+            "defaultValue": "0"
+          }
+        },
+        {
+          "type": "bool",
+          "id": "cpuUsageFix",
+          "source": "hires",
+          "section": "OTHER_SETTINGS",
+          "key": "CPU_USAGE_FIX",
+          "label": "CPU_USAGE_FIX",
+          "toolTip": "Reduces the processor load by letting the system idle.",
+          "properties": {
+            "defaultValue": "0"
+          }
+        },
+        {
+          "type": "bool",
+          "id": "extraWinMessageChecks",
+          "source": "hires",
+          "section": "INPUT",
+          "key": "EXTRA_WIN_MSG_CHECKS",
+          "label": "EXTRA_WIN_MSG_CHECKS",
+          "properties": {
+            "defaultValue": "0"
+          }
+        },
+        {
+          "type": "bool",
+          "id": "dialogArtFix",
+          "source": "hires",
+          "section": "OTHER_SETTINGS",
+          "key": "DIALOG_SCRN_ART_FIX",
+          "label": "DIALOG_SCRN_ART_FIX",
+          "toolTip": "Uses the dialogue window interface picture made by Continuum.",
+          "properties": {
+            "defaultValue": "1"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Resource Data",
+      "items": [
+        {
+          "type": "path",
+          "id": "resourceData",
+          "source": "hires",
+          "section": "MAIN",
+          "key": "f2_res_dat",
+          "label": "f2_res_dat:",
+          "toolTip": "Path to the resource file of the Hi-Res patch.",
+          "kind": "File",
+          "properties": {
+            "defaultValue": "f2_res.dat",
+            "fileFilter": "Dat files|*.dat"
+          }
+        },
+        {
+          "type": "path",
+          "id": "resourcePatches",
+          "source": "hires",
+          "section": "MAIN",
+          "key": "f2_res_patches",
+          "label": "f2_res_patches:",
+          "toolTip": "Path to the patch folder.",
+          "kind": "Folder",
+          "properties": {
+            "defaultValue": "data"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore the tools
+        run: dotnet tool restore
+
+      - name: Check the format of the XAML files
+        run: dotnet xstyler -d SFallConfigurator -r -p
+
+      - name: Build
+        run: dotnet build SFallConfigurator.slnx --configuration Release -warnaserror
+
+      - name: Test
+        run: dotnet test SFallConfigurator.slnx --configuration Release --no-build
+
+      - name: Publish the two executables
+        run: pwsh -NoProfile -File Publish.ps1
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SFallConfigurator
+          path: publish/*.exe

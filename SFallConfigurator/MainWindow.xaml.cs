@@ -5,10 +5,13 @@ namespace SFallConfigurator
 	using System.Windows;
 	using System.Windows.Controls;
 	using System.Windows.Controls.Primitives;
+	using System.Windows.Input;
 	using System.Windows.Media;
 	using System.Windows.Threading;
 	using Configuration;
 	using Localization;
+	using Options;
+	using Services;
 	using ViewModels;
 	using Views;
 
@@ -21,6 +24,7 @@ namespace SFallConfigurator
 		private const String RestoreGlyph = "";
 
 		private MainViewModel _viewModel;
+		private WindowState _stateBeforeMinimize = WindowState.Normal;
 
 		internal MainWindow(MainViewModel viewModel)
 		{
@@ -29,6 +33,7 @@ namespace SFallConfigurator
 			InitializeComponent();
 			TitleBarTheme.Attach(this);
 			RestorePlacement();
+			viewModel.NavigationRequested += OnNavigationRequested;
 		}
 
 		/// <summary>
@@ -37,19 +42,127 @@ namespace SFallConfigurator
 		internal MainViewModel ViewModel
 		{
 			get => _viewModel;
-			set
+			set => SetViewModel(value, keepTab: false);
+		}
+
+		/// <summary>
+		/// Shows another view model. With <paramref name="keepTab"/> the tab that was selected stays selected.
+		/// </summary>
+		internal void SetViewModel(MainViewModel viewModel, Boolean keepTab)
+		{
+			Object? selected = keepTab ? MainTabs.SelectedItem : null;
+			_viewModel.NavigationRequested -= OnNavigationRequested;
+			_viewModel.Dispose();
+			_viewModel = viewModel;
+			_viewModel.NavigationRequested += OnNavigationRequested;
+			DataContext = viewModel;
+
+			if (selected is TabItem tab)
 			{
-				_viewModel = value;
-				DataContext = value;
+				// The tabs are shown by bindings that are updated after the view model is set.
+				Dispatcher.BeginInvoke(() => MainTabs.SelectedItem = tab.Visibility == Visibility.Visible ? tab : GetStartTab(), DispatcherPriority.Loaded);
+			}
+			else
+			{
 				SelectStartTab();
 			}
+		}
+
+		/// <summary>
+		/// Shows the tab of an option that was searched, and takes the user to the option.
+		/// </summary>
+		private void OnNavigationRequested(Object? sender, NavigationTarget target)
+		{
+			MainTabs.SelectedItem = target.Section switch
+			{
+				MainSection.Sfall => SfallTab,
+				MainSection.HiRes => HiResTab,
+				MainSection.Mods => ModsTab,
+				_ => SettingsTab,
+			};
+
+			// The page of the tab is created when it is shown.
+			Dispatcher.BeginInvoke(() => Reveal(target.Option), DispatcherPriority.ContextIdle);
+		}
+
+		private void Reveal(ConfigOption option)
+		{
+			if (FindElement(MainTabs, option) is { } element)
+			{
+				element.BringIntoView();
+				element.MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
+			}
+		}
+
+		/// <summary>
+		/// The outermost element that shows the option: the first one, going down, whose data is the option.
+		/// </summary>
+		private static FrameworkElement? FindElement(DependencyObject parent, ConfigOption option)
+		{
+			for (Int32 index = 0; index < VisualTreeHelper.GetChildrenCount(parent); index++)
+			{
+				DependencyObject child = VisualTreeHelper.GetChild(parent, index);
+				if (child is FrameworkElement { IsVisible: true } element && ReferenceEquals(element.DataContext, option))
+				{
+					return element;
+				}
+
+				if (FindElement(child, option) is { } found)
+				{
+					return found;
+				}
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// The down arrow takes the focus from the search box to the list of the results.
+		/// </summary>
+		private void OnSearchKeyDown(Object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.Down && SearchResults.Items.Count > 0)
+			{
+				SearchResults.Focus();
+				e.Handled = true;
+			}
+		}
+
+		/// <summary>
+		/// Typing starts at once when the search bar is shown.
+		/// </summary>
+		private void OnSearchBarVisibleChanged(Object sender, DependencyPropertyChangedEventArgs e)
+		{
+			if (e.NewValue is true)
+			{
+				Dispatcher.BeginInvoke(
+					() =>
+					{
+						SearchBox.Focus();
+						SearchBox.SelectAll();
+					},
+					DispatcherPriority.Input);
+			}
+		}
+
+		private void OnSearchResultClick(Object sender, MouseButtonEventArgs e)
+		{
+			if (e.OriginalSource is DependencyObject source && ItemsControl.ContainerFromElement(SearchResults, source) is ListBoxItem)
+			{
+				_viewModel.Search.Open();
+			}
+		}
+
+		private TabItem GetStartTab()
+		{
+			return _viewModel.IsGameConfigured ? SfallTab : DatInfoTab;
 		}
 
 		private void SelectStartTab()
 		{
 			// The tabs of a configured game are shown by bindings that are updated after the view model is set.
 			Dispatcher.BeginInvoke(
-				() => MainTabs.SelectedItem = _viewModel.IsGameConfigured ? SfallTab : DatInfoTab,
+				() => MainTabs.SelectedItem = GetStartTab(),
 				DispatcherPriority.Loaded);
 		}
 
@@ -65,11 +178,11 @@ namespace SFallConfigurator
 				return;
 			}
 
-			WindowPlacement placement = saved.Value.FitInto(
-				SystemParameters.VirtualScreenLeft,
-				SystemParameters.VirtualScreenTop,
-				SystemParameters.VirtualScreenWidth,
-				SystemParameters.VirtualScreenHeight);
+			// The window comes back on the monitor that is nearest to where it was: a monitor that is gone, or a corner of
+			// the bounding box of the monitors where there is no screen, cannot hide it.
+			Rect area = MonitorAreas.GetWorkAreaNear(new Rect(saved.Value.Left, saved.Value.Top, saved.Value.Width, saved.Value.Height), VisualTreeHelper.GetDpi(this).DpiScaleX)
+				?? new Rect(SystemParameters.VirtualScreenLeft, SystemParameters.VirtualScreenTop, SystemParameters.VirtualScreenWidth, SystemParameters.VirtualScreenHeight);
+			WindowPlacement placement = saved.Value.FitInto(area.Left, area.Top, area.Width, area.Height);
 
 			WindowStartupLocation = WindowStartupLocation.Manual;
 			Width = Math.Max(placement.Width, MinWidth);
@@ -85,7 +198,8 @@ namespace SFallConfigurator
 		private void SavePlacement()
 		{
 			Rect bounds = WindowState == WindowState.Normal ? new Rect(Left, Top, Width, Height) : RestoreBounds;
-			new WindowPlacement(bounds.Left, bounds.Top, bounds.Width, bounds.Height, WindowState == WindowState.Maximized).Save();
+			Boolean maximized = (WindowState == WindowState.Minimized ? _stateBeforeMinimize : WindowState) == WindowState.Maximized;
+			new WindowPlacement(bounds.Left, bounds.Top, bounds.Width, bounds.Height, maximized).Save();
 		}
 
 		private void OnContentRendered(Object? sender, EventArgs e)
@@ -110,9 +224,35 @@ namespace SFallConfigurator
 		private void OnStateChanged(Object? sender, EventArgs e)
 		{
 			// A maximized window with a custom frame extends beyond the screen by the size of its resize border.
+			if (WindowState != WindowState.Minimized)
+			{
+				_stateBeforeMinimize = WindowState;
+			}
+
 			Boolean maximized = WindowState == WindowState.Maximized;
 			Frame.Margin = maximized ? new Thickness(SystemParameters.WindowResizeBorderThickness.Left + SystemParameters.FixedFrameVerticalBorderWidth) : new Thickness(0);
 			MaximizeButton.Content = maximized ? RestoreGlyph : MaximizeGlyph;
+		}
+
+		/// <summary>
+		/// Ctrl+Z and Ctrl+Y undo and redo the last change of the option that has the focus. A text box keeps its own undo.
+		/// </summary>
+		private void OnPreviewKeyDown(Object sender, KeyEventArgs e)
+		{
+			if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && e.Key is Key.Z or Key.Y
+				&& Keyboard.FocusedElement is FrameworkElement { DataContext: ConfigOption option } and not TextBox)
+			{
+				if (e.Key == Key.Y || Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
+				{
+					option.Redo();
+				}
+				else
+				{
+					option.Undo();
+				}
+
+				e.Handled = true;
+			}
 		}
 
 		private void OnMinimizeClick(Object sender, RoutedEventArgs e)
@@ -137,47 +277,17 @@ namespace SFallConfigurator
 			SystemCommands.CloseWindow(this);
 		}
 
-		private void OnThemeButtonClick(Object sender, RoutedEventArgs e)
+		/// <summary>
+		/// Opens the menu of a button of the title bar: the entries come from the view model.
+		/// </summary>
+		private void OnMenuButtonClick(Object sender, RoutedEventArgs e)
 		{
-			ContextMenu menu = CreateMenu(ThemeButton);
-			foreach (ThemePreference preference in Enum.GetValues<ThemePreference>())
+			if (sender is Button { ContextMenu: { } menu } button)
 			{
-				MenuItem item = CreateMenuItem(Localizer.T(preference.ToString()), preference == ThemeManager.Preference);
-				item.Click += (_, _) => ThemeManager.SetPreference(preference);
-				menu.Items.Add(item);
+				menu.PlacementTarget = button;
+				menu.Placement = PlacementMode.Bottom;
+				menu.IsOpen = true;
 			}
-
-			menu.IsOpen = true;
-		}
-
-		private void OnLanguageButtonClick(Object sender, RoutedEventArgs e)
-		{
-			ContextMenu menu = CreateMenu(LanguageButton);
-			foreach (LanguageInfo language in Localizer.Languages)
-			{
-				MenuItem item = CreateMenuItem(language.NativeName, language.Code == Localizer.Instance.Language);
-				item.Command = _viewModel.ChangeLanguageCommand;
-				item.CommandParameter = language.Code;
-				menu.Items.Add(item);
-			}
-
-			menu.IsOpen = true;
-		}
-
-		private ContextMenu CreateMenu(Button target)
-		{
-			// The menu inherits the font of its target, which is the symbol font of the button: give it the font of the window.
-			return new ContextMenu { PlacementTarget = target, Placement = PlacementMode.Bottom, FontFamily = FontFamily, FontSize = FontSize };
-		}
-
-		private MenuItem CreateMenuItem(String header, Boolean isCurrent)
-		{
-			// A check mark (a glyph of the symbol font) shows the choice in use.
-			return new MenuItem
-			{
-				Header = header,
-				Icon = isCurrent ? new TextBlock { Text = "\uE73E", FontFamily = (FontFamily)FindResource("SymbolThemeFontFamily") } : null,
-			};
 		}
 	}
 }

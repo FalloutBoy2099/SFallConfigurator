@@ -61,27 +61,13 @@ namespace SFallConfigurator.Tests
 			Assert.Equal("0x1, 0x" + hex, ExeChecksum.AppendTo("0x1", exe));
 		}
 
-		private static String CreateFakeExecutable(TestFolder folder, Boolean valid)
-		{
-			Byte[] image = new Byte[1100000];
-			if (valid)
-			{
-				Encoding.ASCII.GetBytes("GNW95MUTEX").CopyTo(image, 1040600);
-				Encoding.ASCII.GetBytes("DDRAW").CopyTo(image, 0x000FE150);
-			}
-
-			String path = folder.Combine(valid ? "fallout2.exe" : "other.exe");
-			File.WriteAllBytes(path, image);
-			return path;
-		}
-
 		[Fact]
 		public void PatcherRecognizesAFallout2Executable()
 		{
 			using TestFolder folder = new();
 
-			Assert.True(ExePatcher.IsValid(CreateFakeExecutable(folder, valid: true)));
-			Assert.False(ExePatcher.IsValid(CreateFakeExecutable(folder, valid: false)));
+			Assert.True(ExePatcher.IsValid(TestExecutable.Create(folder)));
+			Assert.False(ExePatcher.IsValid(TestExecutable.Create(folder, valid: false)));
 			Assert.False(ExePatcher.IsValid(folder.Combine("missing.exe")));
 		}
 
@@ -89,7 +75,7 @@ namespace SFallConfigurator.Tests
 		public void HiResPatchCanBeEnabledAndDisabled()
 		{
 			using TestFolder folder = new();
-			String exe = CreateFakeExecutable(folder, valid: true);
+			String exe = TestExecutable.Create(folder);
 
 			Assert.False(ExePatcher.IsHiResPatchEnabled(exe));
 			Assert.True(ExePatcher.SetHiResPatch(exe, enable: true));
@@ -102,7 +88,7 @@ namespace SFallConfigurator.Tests
 		public void SfallDllNameCanBeSwitched()
 		{
 			using TestFolder folder = new();
-			String exe = CreateFakeExecutable(folder, valid: true);
+			String exe = TestExecutable.Create(folder);
 
 			Assert.Equal(DllPatchState.Original, ExePatcher.GetSfallDllState(exe));
 			Assert.True(ExePatcher.SetSfallDll(exe, enable: true));
@@ -116,25 +102,62 @@ namespace SFallConfigurator.Tests
 		public void PatcherRefusesAnotherExecutable()
 		{
 			using TestFolder folder = new();
-			String exe = CreateFakeExecutable(folder, valid: false);
+			String exe = TestExecutable.Create(folder, valid: false);
 
 			Assert.False(ExePatcher.SetHiResPatch(exe, enable: true));
 			Assert.False(ExePatcher.SetSfallDll(exe, enable: true));
 		}
 
+		private static readonly ScreenResolution[] SomeModes =
+		[
+			new ScreenResolution(800, 600),
+			new ScreenResolution(1920, 1080),
+			new ScreenResolution(320, 200),
+			new ScreenResolution(1280, 960),
+			new ScreenResolution(1920, 1080),
+			new ScreenResolution(1280, 1024),
+			new ScreenResolution(1024, 768),
+			new ScreenResolution(1600, 900),
+		];
+
 		[Fact]
-		public void DisplayModesAreLargestFirstAndAtLeast640x480()
+		public void DisplayModesAreLargestFirstEachOnceAndAtLeast640x480()
 		{
-			System.Collections.Generic.IReadOnlyList<ScreenResolution> modes = DisplayModes.GetAvailable();
+			System.Collections.Generic.IReadOnlyList<ScreenResolution> modes = DisplayModes.Filter(SomeModes, scaledX2: false);
 
-			Assert.All(modes, mode => Assert.True(mode.Width >= 640 && mode.Height >= 480));
-			for (Int32 index = 1; index < modes.Count; index++)
-			{
-				Assert.True(modes[index - 1].Width > modes[index].Width
-					|| (modes[index - 1].Width == modes[index].Width && modes[index - 1].Height > modes[index].Height));
-			}
+			Assert.Equal(
+				[
+					new ScreenResolution(1920, 1080),
+					new ScreenResolution(1600, 900),
+					new ScreenResolution(1280, 1024),
+					new ScreenResolution(1280, 960),
+					new ScreenResolution(1024, 768),
+					new ScreenResolution(800, 600),
+				],
+				modes);
+		}
 
+		[Fact]
+		public void DisplayModesForDoubleSizeAreAtLeast1280x960()
+		{
+			System.Collections.Generic.IReadOnlyList<ScreenResolution> modes = DisplayModes.Filter(SomeModes, scaledX2: true);
+
+			Assert.Equal(
+				[
+					new ScreenResolution(1920, 1080),
+					new ScreenResolution(1280, 1024),
+					new ScreenResolution(1280, 960),
+				],
+				modes);
+		}
+
+		[Fact]
+		public void TheDriverOfThisMachineGivesModesThatFollowTheSameRules()
+		{
+			// Without a display (a service, a remote session) there is nothing to check: the rules are tested above.
+			Assert.All(DisplayModes.GetAvailable(), mode => Assert.True(mode.Width >= 640 && mode.Height >= 480));
 			Assert.All(DisplayModes.GetAvailable(scaledX2: true), mode => Assert.True(mode.Width >= 1280 && mode.Height >= 960));
 		}
+
 	}
 }

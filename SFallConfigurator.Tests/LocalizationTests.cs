@@ -8,6 +8,7 @@ namespace SFallConfigurator.Tests
 	using System.Text.Json;
 	using Configuration;
 	using Localization;
+	using Services;
 	using Views;
 	using Xunit;
 
@@ -26,7 +27,7 @@ namespace SFallConfigurator.Tests
 		public void Dispose()
 		{
 			Localizer.Instance.Apply("en");
-			UserSettings.DirectoryOverride = null;
+			UserSettings.DirectoryOverride = TestEnvironment.SettingsFolder;
 			_settings.Dispose();
 		}
 
@@ -124,18 +125,6 @@ namespace SFallConfigurator.Tests
 		}
 
 		[Fact]
-		public void TheFrenchDictionaryCoversEverythingTheRussianOneDoes()
-		{
-			Dictionary<String, String> french = ReadDictionary("fr");
-			Dictionary<String, String> russian = ReadDictionary("ru");
-
-			Assert.NotEmpty(french);
-			Assert.NotEmpty(russian);
-			Assert.All(russian.Keys, key => Assert.True(french.ContainsKey(key), "Missing in fr.json: " + key));
-			Assert.All(french.Where(entry => entry.Value.Contains("{0}")), entry => Assert.Contains("{0}", entry.Key));
-		}
-
-		[Fact]
 		public void EveryLanguageOfTheMenuHasACompleteDictionary()
 		{
 			Dictionary<String, String> french = ReadDictionary("fr");
@@ -143,11 +132,8 @@ namespace SFallConfigurator.Tests
 			foreach (LanguageInfo language in Localizer.Languages.Where(language => language.Code != "en"))
 			{
 				Dictionary<String, String> dictionary = ReadDictionary(language.Code);
-				if (language.Code != "ru")
-				{
-					Assert.Empty(french.Keys.Except(dictionary.Keys));
-					Assert.Empty(dictionary.Keys.Except(french.Keys));
-				}
+				Assert.Empty(french.Keys.Except(dictionary.Keys));
+				Assert.Empty(dictionary.Keys.Except(french.Keys));
 
 				Assert.All(dictionary, entry =>
 				{
@@ -199,7 +185,7 @@ namespace SFallConfigurator.Tests
 		[InlineData("7", "Automatic")]
 		public void TheThemePreferenceIsReadFromTheSettings(String? text, String expected)
 		{
-			Assert.Equal(expected, ThemeManager.Parse(text).ToString());
+			Assert.Equal(expected, MemoryThemeService.Parse(text).ToString());
 		}
 
 		[Fact]

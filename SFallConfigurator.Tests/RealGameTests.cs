@@ -53,7 +53,7 @@ namespace SFallConfigurator.Tests
 		{
 			GameConfiguration configuration = new(path);
 			configuration.Load();
-			MainViewModel viewModel = new(configuration, interaction, () => { }, _ => { }, _ => { });
+			MainViewModel viewModel = new(configuration, new AppServices(interaction), new TestHost());
 			viewModel.Load();
 			return viewModel;
 		}

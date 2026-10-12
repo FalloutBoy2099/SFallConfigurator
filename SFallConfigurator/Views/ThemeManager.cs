@@ -3,25 +3,14 @@ namespace SFallConfigurator.Views
 	using System;
 	using System.Windows;
 	using Configuration;
+	using Services;
 	using Microsoft.Win32;
-
-	/// <summary>
-	/// The theme choice of the user: follow Windows, or always light, or always dark.
-	/// </summary>
-	internal enum ThemePreference
-	{
-		Automatic,
-		Light,
-		Dark,
-	}
 
 	/// <summary>
 	/// Applies the theme preference to the application and remembers it.
 	/// </summary>
 	internal static class ThemeManager
 	{
-		private const String ThemeKey = "theme";
-
 		public static ThemePreference Preference { get; private set; } = ThemePreference.Automatic;
 
 		/// <summary>
@@ -29,17 +18,15 @@ namespace SFallConfigurator.Views
 		/// </summary>
 		public static void Initialize()
 		{
-			Preference = Parse(UserSettings.Get(ThemeKey));
-			ApplyToApplication();
+			Apply(MemoryThemeService.Parse(UserSettings.Get("theme")));
 		}
 
 		/// <summary>
-		/// Changes the theme of the running application and remembers the choice.
+		/// Changes the theme of the running application: its colours, and the title bar of every open window.
 		/// </summary>
-		public static void SetPreference(ThemePreference preference)
+		public static void Apply(ThemePreference preference)
 		{
 			Preference = preference;
-			UserSettings.Set(ThemeKey, preference.ToString().ToLowerInvariant());
 			ApplyToApplication();
 
 			foreach (Window window in Application.Current.Windows)
@@ -59,11 +46,6 @@ namespace SFallConfigurator.Views
 				ThemePreference.Dark => true,
 				_ => IsWindowsDark(),
 			};
-		}
-
-		internal static ThemePreference Parse(String? text)
-		{
-			return Enum.TryParse(text, true, out ThemePreference preference) && Enum.IsDefined(preference) ? preference : ThemePreference.Automatic;
 		}
 
 		private static Boolean IsWindowsDark()

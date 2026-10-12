@@ -75,17 +75,40 @@ try {
 		}
 	}
 
-	# Start from a clean folder so that no file of an older publish is left behind.
-	Remove-Folder $output
-	New-Item -ItemType Directory -Path $output | Out-Null
+	# The new folder is complete before the old one is touched.
+	$ready = Join-Path $root 'publish.new'
+	Remove-Folder $ready
+	New-Item -ItemType Directory -Path $ready | Out-Null
 
 	foreach ($variant in $variants) {
 		$folder = Join-Path $staging ([System.IO.Path]::GetFileNameWithoutExtension($variant.Name))
-		Move-Item (Join-Path $folder 'SFallConfigurator.exe') (Join-Path $output $variant.Name)
+		Move-Item (Join-Path $folder 'SFallConfigurator.exe') (Join-Path $ready $variant.Name)
 	}
+
+	# No file of an older publish is left behind. The old folder is only moved aside first: when that fails (an
+	# executable of the folder is running), the old publish is still there and nothing is lost.
+	$previous = Join-Path $root 'publish.old'
+	Remove-Folder $previous
+	if (Test-Path $output) {
+		Move-Item $output $previous
+	}
+
+	try {
+		Move-Item $ready $output
+	}
+	catch {
+		if (Test-Path $previous) {
+			Move-Item $previous $output
+		}
+
+		throw
+	}
+
+	Remove-Folder $previous
 }
 finally {
 	Remove-Folder $staging
+	Remove-Folder (Join-Path $root 'publish.new')
 }
 
 foreach ($variant in $variants) {

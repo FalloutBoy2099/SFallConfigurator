@@ -3,27 +3,35 @@ namespace SFallConfigurator
 	using System;
 	using System.IO;
 	using System.Windows;
+	using System.Windows.Input;
 	using System.Windows.Threading;
 	using Configuration;
 	using Infrastructure;
 	using Localization;
+	using Services;
 	using ViewModels;
 	using Views;
 
 	/// <summary>
 	/// Starts the configurator and keeps the window on the game folder chosen by the user.
 	/// </summary>
-	public partial class App : Application
+	public partial class App : Application, IAppHost
 	{
 		private WpfUserInteraction? _interaction;
+		private readonly ThemeService _theme = new();
 		private MainWindow? _window;
 		private Boolean _isReportingError;
+		private FolderLock? _folderLock;
+
+		// Kept in a field: the command manager holds its handlers weakly.
+		private static readonly EventHandler RequeryCommands = (_, _) => RelayCommand.RaiseAll();
 
 		protected override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
 
 			DispatcherUnhandledException += OnUnhandledException;
+			CommandManager.RequerySuggested += RequeryCommands;
 			ThemeManager.Initialize();
 			TitleBarTheme.ApplyToAllWindows();
 			Localizer.Instance.Initialize();
@@ -68,28 +76,50 @@ namespace SFallConfigurator
 		private MainViewModel? CreateViewModel(String gamePath)
 		{
 			MainViewModel viewModel;
+			FolderLock? folderLock = null;
 			try
 			{
-				GameConfiguration configuration = new(GameLocator.Normalize(gamePath));
+				String normalized = GameLocator.Normalize(gamePath);
+
+				// Two windows on one folder would overwrite the changes of each other.
+				folderLock = FolderLock.TryAcquire(normalized);
+				if (folderLock is null && !AskToShareFolder(normalized))
+				{
+					return null;
+				}
+
+				GameConfiguration configuration = new(normalized);
 				configuration.Load();
-				viewModel = new MainViewModel(configuration, _interaction!, () => _window?.Close(), ChangeGameFolder, ChangeLanguage);
+				viewModel = new MainViewModel(configuration, new AppServices(_interaction!) { Theme = _theme }, this);
 				viewModel.Load();
 			}
 			catch (Exception exception) when (ErrorGuard.IsFileError(exception))
 			{
+				folderLock?.Dispose();
 				MessageDialog.Show(_window, exception.Message, "SFallConfigurator", MessageBoxButton.OK, MessageBoxImage.Error);
 				return null;
 			}
 
+			// The folder that was open is free for the other windows.
+			_folderLock?.Dispose();
+			_folderLock = folderLock;
+
 			// A folder that cannot be opened is not remembered.
 			GameLocator.RememberGamePath(viewModel.Configuration.GamePath);
+			viewModel.StartWatching();
 			return viewModel;
+		}
+
+		private Boolean AskToShareFolder(String gamePath)
+		{
+			return MessageDialog.Show(_window, Localizer.F("Another window of SFallConfigurator is already editing the folder {0}. Editing it in two windows can lose changes. Open it anyway?", gamePath), "SFallConfigurator", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
 		}
 
 		private void OnUnhandledException(Object sender, DispatcherUnhandledExceptionEventArgs e)
 		{
 			// The window stays open: the changes the user made are not lost with a failure of one action.
 			e.Handled = true;
+			ErrorLog.Write(e.Exception);
 			if (_isReportingError)
 			{
 				return;
@@ -106,10 +136,39 @@ namespace SFallConfigurator
 			}
 		}
 
+		void IAppHost.Close()
+		{
+			_window?.Close();
+		}
+
+		protected override void OnExit(ExitEventArgs e)
+		{
+			_folderLock?.Dispose();
+			base.OnExit(e);
+		}
+
+		/// <summary>
+		/// Reads the game folder again: the files changed outside of the program, or were restored from a backup.
+		/// </summary>
+		void IAppHost.Reload(String? notice)
+		{
+			if (_window is null)
+			{
+				return;
+			}
+
+			MainViewModel? viewModel = CreateViewModel(_window.ViewModel.GamePath);
+			if (viewModel is not null)
+			{
+				viewModel.ShowNotice(notice, canReload: false);
+				_window.SetViewModel(viewModel, keepTab: true);
+			}
+		}
+
 		/// <summary>
 		/// Switches the language of the interface: the window is rebuilt for the same game folder.
 		/// </summary>
-		private void ChangeLanguage(String code)
+		void IAppHost.ChangeLanguage(String code)
 		{
 			if (_window is null || code == Localizer.Instance.Language || !_window.ViewModel.ConfirmClose())
 			{
@@ -119,21 +178,30 @@ namespace SFallConfigurator
 			String previous = Localizer.Instance.Language;
 			Localizer.Instance.SetLanguage(code);
 
-			MainViewModel? viewModel = CreateViewModel(_window.ViewModel.GamePath);
-			if (viewModel is null)
+			Boolean switched = false;
+			try
 			{
-				// The window still shows the old language: the choice must not stay.
-				Localizer.Instance.SetLanguage(previous);
-				return;
+				MainViewModel? viewModel = CreateViewModel(_window.ViewModel.GamePath);
+				if (viewModel is not null)
+				{
+					_window.SetViewModel(viewModel, keepTab: true);
+					switched = true;
+				}
 			}
-
-			_window.ViewModel = viewModel;
+			finally
+			{
+				// The window still shows the old language: the choice must not stay, whatever stopped the switch.
+				if (!switched)
+				{
+					Localizer.Instance.SetLanguage(previous);
+				}
+			}
 		}
 
 		/// <summary>
 		/// Switches the window to another game folder, after the pending changes were dealt with.
 		/// </summary>
-		private void ChangeGameFolder(String gamePath)
+		void IAppHost.ChangeGameFolder(String gamePath)
 		{
 			if (_window is null || !_window.ViewModel.ConfirmClose())
 			{

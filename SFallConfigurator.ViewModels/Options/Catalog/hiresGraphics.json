@@ -1,0 +1,88 @@
+{
+  "id": "hiresGraphics",
+  "title": "Graphics",
+  "groups": [
+    {
+      "items": [
+        {
+          "type": "choice",
+          "id": "graphicsMode",
+          "source": "hires",
+          "section": "MAIN",
+          "key": "GRAPHICS_MODE",
+          "label": "Graphic mode:",
+          "items": [
+            "0 - Basic (obsolete DirectDraw)",
+            "1 - DirectDraw (DirectX 7)",
+            "2 - Direct3D (DirectX 9)"
+          ],
+          "properties": {
+            "defaultValue": "2"
+          }
+        },
+        {
+          "type": "windowMode",
+          "id": "windowMode",
+          "source": "hires",
+          "section": "MAIN",
+          "key": "WINDOWED",
+          "label": "Window Mode",
+          "toolTip": "Full Screen - the game runs full screen.\nWindowed - the game runs in a window."
+        }
+      ]
+    },
+    {
+      "title": "Custom Screen Resolution",
+      "items": [
+        {
+          "type": "number",
+          "id": "width",
+          "source": "hires",
+          "section": "MAIN",
+          "key": "SCR_WIDTH",
+          "label": "Width",
+          "toolTip": "Width",
+          "minimum": 640,
+          "maximum": 10000,
+          "properties": {
+            "increment": 10,
+            "defaultValue": "640"
+          },
+          "hidden": true
+        },
+        {
+          "type": "number",
+          "id": "height",
+          "source": "hires",
+          "section": "MAIN",
+          "key": "SCR_HEIGHT",
+          "label": "Height",
+          "toolTip": "Height",
+          "minimum": 480,
+          "maximum": 10000,
+          "properties": {
+            "increment": 10,
+            "defaultValue": "480"
+          },
+          "hidden": true
+        },
+        {
+          "type": "bool",
+          "id": "scaleX2",
+          "source": "hires",
+          "section": "MAIN",
+          "key": "SCALE_2X",
+          "label": "Scale X2 Mode",
+          "properties": {
+            "defaultValue": "0"
+          },
+          "hidden": true
+        },
+        {
+          "type": "custom",
+          "id": "resolution"
+        }
+      ]
+    }
+  ]
+}

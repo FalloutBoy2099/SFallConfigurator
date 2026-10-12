@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<!-- Files, archives, mods, patches and texts: nothing in this project knows a window. -->
+	<PropertyGroup>
+		<AssemblyName>SFallConfigurator.Core</AssemblyName>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="SFallConfigurator.ViewModels" />
+		<InternalsVisibleTo Include="SFallConfigurator" />
+		<InternalsVisibleTo Include="SFallConfigurator.Tests" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Localization\*.json" LogicalName="SFallConfigurator.Localization.%(Filename)%(Extension)" />
+	</ItemGroup>
+
+</Project>

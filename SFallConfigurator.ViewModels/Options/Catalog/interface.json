@@ -1,0 +1,265 @@
+{
+  "id": "interface",
+  "title": "Interface",
+  "groups": [
+    {
+      "title": "Display",
+      "items": [
+        {
+          "type": "bool",
+          "id": "bonusDamage",
+          "source": "sfall",
+          "key": "DisplayBonusDamage",
+          "addToSection": "Misc",
+          "default": "0",
+          "label": "Display Bonus Damage"
+        },
+        {
+          "type": "bool",
+          "id": "electricalResist",
+          "source": "sfall",
+          "key": "DisplayElectricalResist",
+          "addToSection": "Misc",
+          "label": "Display Electrical Resist",
+          "toolTip": "Additionally shows the electrical resistance of the armor in the player's inventory."
+        },
+        {
+          "type": "bool",
+          "id": "cityReputation",
+          "source": "sfall",
+          "key": "DisplayCityReputation",
+          "addToSection": "Misc",
+          "label": "Display City Reputation"
+        },
+        {
+          "type": "bool",
+          "id": "partyExtraInfo",
+          "source": "sfall",
+          "key": "PartyMemberExtraInfo",
+          "addToSection": "Misc",
+          "label": "Party Member Extra Info"
+        },
+        {
+          "type": "bool",
+          "id": "numbersInDialogue",
+          "source": "sfall",
+          "key": "NumbersInDialogue",
+          "addToSection": "Misc",
+          "default": "0",
+          "label": "Numbers in Dialogue",
+          "toolTip": "Shows numbers next to the player's replies in dialogues."
+        },
+        {
+          "type": "bool",
+          "id": "musicInDialogue",
+          "source": "sfall",
+          "key": "EnableMusicInDialogue",
+          "addToSection": "Misc",
+          "label": "Music in Dialogue"
+        },
+        {
+          "type": "bool",
+          "id": "actionPointsBar",
+          "source": "sfall",
+          "key": "ActionPointsBar",
+          "addToSection": "Interface",
+          "default": "0",
+          "label": "Expand Action Points Bar"
+        },
+        {
+          "type": "bool",
+          "id": "expandInventory",
+          "source": "sfall",
+          "key": "ExpandInventory",
+          "addToSection": "Interface",
+          "label": "Expand Inventory Interface",
+          "toolTip": "Expands the inventory interface.",
+          "properties": {
+            "trueValue": "2"
+          }
+        },
+        {
+          "type": "key",
+          "id": "hideInterfaceKey",
+          "source": "sfallMods",
+          "section": "Misc",
+          "key": "HideInterfaceKey",
+          "label": "Hide Interface Key :",
+          "defaultCode": 45
+        }
+      ]
+    },
+    {
+      "title": "Speed Animation",
+      "items": [
+        {
+          "type": "bool",
+          "id": "pipboyTimeAnim",
+          "source": "sfall",
+          "key": "PipboyTimeAnimDelay",
+          "addToSection": "Misc",
+          "label": "Pipboy Time Anim",
+          "toolTip": "Speeds up the animation of the alarm clock time counter in the Pip-Boy.",
+          "properties": {
+            "trueValue": "10",
+            "falseValue": "50"
+          }
+        },
+        {
+          "type": "bool",
+          "id": "speedInterfaceCounter",
+          "source": "sfall",
+          "key": "SpeedInterfaceCounterAnims",
+          "addToSection": "Misc",
+          "label": "Speed Interface Counter",
+          "toolTip": "Speeds up the animation of the HP/AC counter.",
+          "properties": {
+            "falseValue": "3"
+          }
+        },
+        {
+          "type": "number",
+          "id": "combatPanelDelay",
+          "source": "sfall",
+          "key": "CombatPanelAnimDelay",
+          "addToSection": "Misc",
+          "default": "1000",
+          "label": "Combat Panel Anim Delay",
+          "toolTip": "Controls the animation speed of the combat panel.\nLower is faster.",
+          "minimum": 0,
+          "maximum": 10000,
+          "properties": {
+            "increment": 100
+          }
+        },
+        {
+          "type": "number",
+          "id": "dialogPanelDelay",
+          "source": "sfall",
+          "key": "DialogPanelAnimDelay",
+          "addToSection": "Misc",
+          "default": "33",
+          "label": "Dialog Panel Anim Delay",
+          "toolTip": "Controls the animation speed of the dialogue panel.\nLower is faster.",
+          "minimum": 0,
+          "maximum": 60
+        }
+      ]
+    },
+    {
+      "title": "Worldmap",
+      "items": [
+        {
+          "type": "choice",
+          "id": "expandWorldmap",
+          "source": "sfall",
+          "key": "ExpandWorldMap",
+          "addToSection": "Interface",
+          "label": "Expanded Worldmap Interface",
+          "toolTip": "Uses the expanded world map interface.",
+          "items": [
+            "Default size",
+            "Expanded size",
+            "Expanded size w/o scaled town markers"
+          ]
+        },
+        {
+          "type": "bool",
+          "id": "wideWorldmap",
+          "source": "sfall",
+          "key": "WideWorldmap",
+          "addToSection": "Interface",
+          "label": "Wide Worldmap",
+          "toolTip": "Uses an interface of 1280x720 pixels for the world map."
+        },
+        {
+          "type": "bool",
+          "id": "worldmapFontFix",
+          "source": "sfall",
+          "key": "WorldMapFontPatch",
+          "addToSection": "Misc",
+          "label": "Worldmap Font Fix"
+        },
+        {
+          "type": "bool",
+          "id": "terrainInfo",
+          "source": "sfall",
+          "key": "WorldMapTerrainInfo",
+          "addToSection": "Interface",
+          "label": "Worldmap Terrain Info",
+          "toolTip": "Shows the terrain type of the world map when the cursor is over the player's marker."
+        },
+        {
+          "type": "bool",
+          "id": "travelMarkers",
+          "source": "sfall",
+          "key": "WorldMapTravelMarkers",
+          "addToSection": "Interface",
+          "label": "Worldmap Travel Markers"
+        },
+        {
+          "type": "bool",
+          "id": "translucency",
+          "source": "sfall",
+          "key": "WorldmapBlackTranslucency",
+          "addToSection": "Interface",
+          "label": "Worldmap Translucency",
+          "toolTip": "Makes the black unexplored areas of the world map translucent."
+        }
+      ]
+    },
+    {
+      "title": "PipBoy quests",
+      "items": [
+        {
+          "type": "bool",
+          "id": "scrollingQuests",
+          "source": "sfall",
+          "key": "UseScrollingQuestsList",
+          "addToSection": "Misc",
+          "label": "Scrolling Quests List",
+          "toolTip": "Shows buttons in the PipBoy to scroll the list of quests.\n\nSince sfall 5.0.1 pages for quests are the default,\nthis option changes the default display to buttons."
+        },
+        {
+          "type": "choice",
+          "id": "questButtonType",
+          "source": "sfall",
+          "key": "UseScrollingQuestsList",
+          "addToSection": "Misc",
+          "label": "Buttons",
+          "toolTip": "Type of the buttons.",
+          "items": [
+            "Small",
+            "Big"
+          ],
+          "properties": {
+            "values": [
+              "1",
+              "2"
+            ]
+          }
+        },
+        {
+          "type": "number",
+          "id": "questButtonX",
+          "source": "sfall",
+          "key": "QuestsScrollButtonsX",
+          "label": "Buttons position X",
+          "toolTip": "Position of the buttons on the X axis",
+          "minimum": 0,
+          "maximum": 640
+        },
+        {
+          "type": "number",
+          "id": "questButtonY",
+          "source": "sfall",
+          "key": "QuestsScrollButtonsY",
+          "label": "Buttons position Y",
+          "toolTip": "Position of the buttons on the Y axis",
+          "minimum": 0,
+          "maximum": 480
+        }
+      ]
+    }
+  ]
+}

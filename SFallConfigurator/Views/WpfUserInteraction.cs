@@ -1,6 +1,7 @@
 namespace SFallConfigurator.Views
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Windows;
 	using Microsoft.Win32;
 	using Infrastructure;
@@ -53,7 +54,7 @@ namespace SFallConfigurator.Views
 
 		public String? PromptText(String prompt, String? initialText, String? caption = null)
 		{
-			TextPromptDialog dialog = new(Localizer.T(prompt), initialText, caption is null ? null : Localizer.T(caption)) { Owner = _owner() };
+			TextPromptDialog dialog = new(Localizer.Label(prompt), initialText, caption is null ? null : Localizer.T(caption)) { Owner = _owner() };
 			return dialog.ShowDialog() == true ? dialog.Result : null;
 		}
 
@@ -79,6 +80,23 @@ namespace SFallConfigurator.Views
 			};
 
 			return ShowDialog(dialog) ? dialog.FolderName : null;
+		}
+
+		public Int32? PickItem(String prompt, IReadOnlyList<String> items, String? caption = null)
+		{
+			ItemPickerDialog dialog = new(Localizer.Label(prompt), items, caption is null ? null : Localizer.T(caption)) { Owner = _owner() };
+			return dialog.ShowDialog() == true ? dialog.SelectedIndex : null;
+		}
+
+		public void ShowReport(String title, IReadOnlyList<ReportLine> lines)
+		{
+			new ReportDialog(Localizer.T(title), lines) { Owner = _owner() }.ShowDialog();
+		}
+
+		public Boolean ReviewChanges(ChangePreview preview, Boolean askToSave)
+		{
+			ChangesDialog dialog = new(preview, askToSave) { Owner = _owner() };
+			return dialog.ShowDialog() == true;
 		}
 
 		/// <summary>

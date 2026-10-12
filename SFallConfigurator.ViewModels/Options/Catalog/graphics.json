@@ -1,0 +1,129 @@
+{
+  "id": "graphics",
+  "title": "Graphics",
+  "groups": [
+    {
+      "items": [
+        {
+          "type": "choice",
+          "id": "mode",
+          "source": "sfall",
+          "section": "Graphics",
+          "key": "Mode",
+          "label": "Graphics Mode:",
+          "toolTip": "The graphics mode set here overrides the mode set in f2_res.ini.\nNote:\nThe DX7 modes are used by the Hi-Res patch built into sFall since v5.0.\nFor the built-in Hi-Res patch, mode 0 (Off) works like DX7 Fullscreen.",
+          "items": [
+            "0 - Off: Using settings of HRP by Mash",
+            "1 - DX7: Fullscreen",
+            "2 - DX7: Windowed",
+            "3 - DX7: Full Desktop Windowed",
+            "4 - DX9: Fullscreen",
+            "5 - DX9: Windowed",
+            "6 - DX9: Full Desktop Windowed"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Screen Resolution",
+      "items": [
+        {
+          "type": "number",
+          "id": "width",
+          "source": "sfall",
+          "key": "GraphicsWidth",
+          "addToSection": "Graphics",
+          "label": "Width",
+          "minimum": 0,
+          "maximum": 10000,
+          "properties": {
+            "increment": 10
+          },
+          "hidden": true
+        },
+        {
+          "type": "number",
+          "id": "height",
+          "source": "sfall",
+          "key": "GraphicsHeight",
+          "addToSection": "Graphics",
+          "label": "Height",
+          "minimum": 0,
+          "maximum": 10000,
+          "properties": {
+            "increment": 10
+          },
+          "hidden": true
+        },
+        {
+          "type": "custom",
+          "id": "resolution"
+        }
+      ]
+    },
+    {
+      "title": "Quality",
+      "items": [
+        {
+          "type": "bool",
+          "id": "textureFilter",
+          "source": "sfall",
+          "key": "TextureFilter",
+          "addToSection": "Graphics",
+          "label": "Force Anti-aliasing Filter",
+          "properties": {
+            "trueValue": "2"
+          }
+        },
+        {
+          "type": "choice",
+          "id": "movieFilter",
+          "source": "sfall",
+          "key": "MovieFilter",
+          "addToSection": "Graphics",
+          "label": "Movie Filter:",
+          "toolTip": "Sets the scaling quality of the game movies.",
+          "items": [
+            "Bilinear (Low Quality)",
+            "Catmull-Rom",
+            "Lanczos2 (High Quality)"
+          ],
+          "properties": {
+            "values": [
+              "1",
+              "2",
+              "3"
+            ]
+          }
+        },
+        {
+          "type": "bool",
+          "id": "limitFps",
+          "source": "sfall",
+          "key": "LimitFPS",
+          "addToSection": "Graphics",
+          "default": "0",
+          "label": "FPS Limit",
+          "toolTip": "Limits a high FPS in the game (DX9 mode).\nIf your graphics card gets very hot while playing, enable this option to reduce its load.\nOtherwise it is not recommended, as it may affect the rendering of the game picture."
+        },
+        {
+          "type": "text",
+          "id": "globalShaderFile",
+          "source": "sfall",
+          "key": "GlobalShaderFile",
+          "addToSection": "Graphics",
+          "label": "Global Shader File",
+          "toolTip": "Uses a hardware shader in the DX9 graphics mode."
+        }
+      ]
+    },
+    {
+      "items": [
+        {
+          "type": "note",
+          "text": "Note: If the game runs with a bad FPS (slowdown) in DX9 Fullscreen mode, switch to DirectX 9 in the \"Hi-Res Config\" tab, after setting the \"Graphics Mode\" option here to Off. If that does not help, disable VSync for your graphics card."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "id": "inventory",
+  "title": "Inventory",
+  "groups": [
+    {
+      "title": "Hot keys",
+      "items": [
+        {
+          "type": "key",
+          "id": "itemFastMoveKey",
+          "source": "sfall",
+          "key": "ItemFastMoveKey",
+          "addToSection": "Input",
+          "label": "Item Fast Move Key :",
+          "defaultCode": 29
+        },
+        {
+          "type": "key",
+          "id": "itemInstantMoveKey",
+          "source": "sfall",
+          "key": "ItemInstantMoveKey",
+          "addToSection": "Input",
+          "label": "Instant Item Move Key :",
+          "defaultCode": 42
+        },
+        {
+          "type": "key",
+          "id": "pickupItemKey",
+          "source": "sfallMods",
+          "section": "Inventory",
+          "key": "PickupItemKey",
+          "label": "Pickup Item Key :",
+          "toolTip": "A hot key to quickly pick up the nearest item on the map.",
+          "defaultCode": 34
+        }
+      ]
+    },
+    {
+      "title": "Items",
+      "items": [
+        {
+          "type": "bool",
+          "id": "fastMoveFromContainer",
+          "source": "sfall",
+          "key": "FastMoveFromContainer",
+          "addToSection": "Input",
+          "default": "0",
+          "label": "Fast Move from Container",
+          "toolTip": "Allows moving a whole stack of items from containers to the player's inventory\nwithout holding the Ctrl key (or the key assigned to the ItemFastMoveKey option).\nThe ItemFastMoveKey option must be enabled; holding the assigned key (Ctrl by default)\nshows the item move window."
+        },
+        {
+          "type": "bool",
+          "id": "itemCounterDefaultMax",
+          "source": "sfall",
+          "key": "ItemCounterDefaultMax",
+          "addToSection": "Misc",
+          "default": "0",
+          "label": "Item Counter Default Max"
+        },
+        {
+          "type": "bool",
+          "id": "instantWeaponEquip",
+          "source": "sfall",
+          "key": "InstantWeaponEquip",
+          "addToSection": "Misc",
+          "default": "0",
+          "label": "Instant Weapon Equip"
+        },
+        {
+          "type": "bool",
+          "id": "stackEmptyWeapons",
+          "source": "sfall",
+          "key": "StackEmptyWeapons",
+          "addToSection": "Misc",
+          "default": "0",
+          "label": "Stack Empty Weapons"
+        },
+        {
+          "type": "bool",
+          "id": "partyMemberTakeOffItem",
+          "source": "sfall",
+          "key": "PartyMemberTakeOffItem",
+          "addToSection": "Misc",
+          "label": "Party Member Take Off Item"
+        },
+        {
+          "type": "bool",
+          "id": "canSellGeiger",
+          "source": "sfall",
+          "key": "CanSellUsedGeiger",
+          "addToSection": "Misc",
+          "default": "0",
+          "label": "Sell Geiger/Stealth Boy",
+          "toolTip": "Allows selling Geiger counters or Stealth Boys that were used before."
+        }
+      ]
+    },
+    {
+      "title": "Mods",
+      "items": [
+        {
+          "type": "bool",
+          "id": "quickAmmoReload",
+          "source": "sfallMods",
+          "section": "Inventory",
+          "key": "QuickAmmoReload",
+          "label": "Quick Ammo Reload"
+        },
+        {
+          "type": "bool",
+          "id": "autoReloadWeapon",
+          "source": "sfallMods",
+          "section": "Inventory",
+          "key": "AutoReloadWeapon",
+          "label": "Auto Reload Weapon",
+          "toolTip": "Automatically reloads the player's weapon after the combat."
+        },
+        {
+          "type": "bool",
+          "id": "autoCloseContainers",
+          "source": "sfallMods",
+          "section": "Inventory",
+          "key": "AutoCloseContainers",
+          "label": "Auto Close Containers",
+          "toolTip": "Automatically closes a container after it was searched."
+        }
+      ]
+    },
+    {
+      "title": "Ammo",
+      "items": [
+        {
+          "type": "number",
+          "id": "reloadReserve",
+          "source": "sfall",
+          "key": "ReloadReserve",
+          "addToSection": "Misc",
+          "default": "-1",
+          "label": "Reload Reserve",
+          "toolTip": "Behavior when reloading the ammo of a weapon in the player's inventory.\n\n-1 - Default behavior with a pop-up window\n 0 - Use all the ammo packs to reload\n 1 or more - Reserves extra magazines",
+          "minimum": -1,
+          "maximum": 999
+        }
+      ]
+    }
+  ]
+}

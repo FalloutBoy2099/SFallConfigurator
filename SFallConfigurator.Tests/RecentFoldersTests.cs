@@ -21,7 +21,7 @@ namespace SFallConfigurator.Tests
 
 		public void Dispose()
 		{
-			UserSettings.DirectoryOverride = null;
+			UserSettings.DirectoryOverride = TestEnvironment.SettingsFolder;
 			_settings.Dispose();
 		}
 

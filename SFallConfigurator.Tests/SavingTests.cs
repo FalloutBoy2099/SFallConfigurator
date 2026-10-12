@@ -4,6 +4,7 @@ namespace SFallConfigurator.Tests
 	using System.IO;
 	using System.Text;
 	using Configuration;
+	using Infrastructure;
 	using ViewModels;
 	using Xunit;
 
@@ -21,7 +22,7 @@ namespace SFallConfigurator.Tests
 
 		public void Dispose()
 		{
-			UserSettings.DirectoryOverride = null;
+			UserSettings.DirectoryOverride = TestEnvironment.SettingsFolder;
 			_settings.Dispose();
 		}
 
@@ -55,7 +56,7 @@ namespace SFallConfigurator.Tests
 			Lock(path);
 			try
 			{
-				Assert.ThrowsAny<Exception>(() => StagedFile.WriteAllLines(path, ["[A]", "Key=2"], new UTF8Encoding(false)));
+				Assert.Throws<UnauthorizedAccessException>(() => StagedFile.WriteAllLines(path, ["[A]", "Key=2"], new UTF8Encoding(false)));
 			}
 			finally
 			{
@@ -79,7 +80,7 @@ namespace SFallConfigurator.Tests
 			Lock(cfg);
 			try
 			{
-				Assert.ThrowsAny<Exception>(() => configuration.Save());
+				Assert.Throws<UnauthorizedAccessException>(() => configuration.Save());
 			}
 			finally
 			{
@@ -102,7 +103,7 @@ namespace SFallConfigurator.Tests
 			configuration.Load();
 			TestInteraction interaction = new()
 			{ SaveAnswer = true };
-			MainViewModel viewModel = new(configuration, interaction, () => { }, _ => { }, _ => { });
+			MainViewModel viewModel = new(configuration, new AppServices(interaction), new TestHost());
 			viewModel.Load();
 			Assert.True(configuration.GameCfgSource.Write("system", "language", "french"));
 			Lock(cfg);
@@ -116,29 +117,6 @@ namespace SFallConfigurator.Tests
 			}
 
 			Assert.Single(interaction.Errors);
-		}
-
-		[Fact]
-		public void TheGameConfigurationKeepsTheBytesOfTheSystemCodePage()
-		{
-			if (!TextEncodings.Ansi.IsSingleByte)
-			{
-				return;
-			}
-
-			using TestFolder folder = new();
-			Byte[] accented = [0xC8, 0xE9, 0xF0];
-			Byte[] original = [.. "[system]\r\nlanguage=english\r\nmaster_patches="u8.ToArray(), .. accented, .. "\r\n"u8.ToArray()];
-			File.WriteAllBytes(folder.Combine("fallout2.cfg"), original);
-			folder.Write("ddraw.ini", "[Main]\r\nExtraCRC=0x1\r\n");
-			GameConfiguration configuration = new(folder.Path);
-			configuration.Load();
-
-			Assert.True(configuration.GameCfgSource.Write("system", "language", "french"));
-			configuration.Save();
-
-			Byte[] saved = File.ReadAllBytes(folder.Combine("fallout2.cfg"));
-			Assert.True(saved.AsSpan().IndexOf(accented) >= 0, "The accented characters of a path must survive a save.");
 		}
 	}
 }

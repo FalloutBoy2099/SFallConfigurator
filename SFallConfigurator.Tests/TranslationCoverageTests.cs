@@ -29,7 +29,7 @@ namespace SFallConfigurator.Tests
 		private static readonly Regex FilterLiteral = new("\"([^\"|\\r\\n]+)\\|\\*\\.[a-z*]+\"", RegexOptions.Compiled);
 		private static readonly Regex XamlKey = new("\\{loc:T '([^']*)'\\}", RegexOptions.Compiled);
 
-		private static String FindSourceFolder()
+		private static String FindSolutionFolder()
 		{
 			DirectoryInfo? directory = new(AppContext.BaseDirectory);
 			while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "SFallConfigurator.slnx")))
@@ -38,13 +38,17 @@ namespace SFallConfigurator.Tests
 			}
 
 			Assert.True(directory is not null, "The source files of the program were not found above " + AppContext.BaseDirectory);
-			return Path.Combine(directory!.FullName, "SFallConfigurator");
+			return directory!.FullName;
 		}
 
+		/// <summary>
+		/// The files of the three projects of the program (not the tests).
+		/// </summary>
 		private static IEnumerable<String> SourceFiles(String pattern)
 		{
-			String folder = FindSourceFolder();
-			return Directory.EnumerateFiles(folder, pattern, SearchOption.AllDirectories)
+			String solution = FindSolutionFolder();
+			return new[] { "SFallConfigurator", "SFallConfigurator.ViewModels", "SFallConfigurator.Core" }
+				.SelectMany(project => Directory.EnumerateFiles(Path.Combine(solution, project), pattern, SearchOption.AllDirectories))
 				.Where(file => !file.Contains(Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar) && !file.Contains(Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar));
 		}
 
@@ -106,7 +110,54 @@ namespace SFallConfigurator.Tests
 				}
 			}
 
+			texts.UnionWith(FindCatalogTexts());
 			return texts;
+		}
+
+		/// <summary>
+		/// The texts that the option catalog shows: titles, labels, explanations, notes, the items of the choices and the
+		/// captions of the sliders and of the buttons.
+		/// </summary>
+		private static IEnumerable<String> FindCatalogTexts()
+		{
+			String[] textProperties = ["minimumLabel", "maximumLabel", "actionLabel", "actionToolTip", "secondaryActionLabel", "secondaryActionToolTip"];
+			foreach (String file in SourceFiles("*.json").Where(file => file.Contains(Path.DirectorySeparatorChar + "Catalog" + Path.DirectorySeparatorChar)))
+			{
+				using JsonDocument document = JsonDocument.Parse(File.ReadAllText(file));
+				JsonElement page = document.RootElement;
+				yield return page.GetProperty("title").GetString()!;
+				foreach (JsonElement group in page.GetProperty("groups").EnumerateArray())
+				{
+					if (group.TryGetProperty("title", out JsonElement groupTitle))
+					{
+						yield return groupTitle.GetString()!;
+					}
+
+					foreach (JsonElement item in group.GetProperty("items").EnumerateArray())
+					{
+						foreach (String name in new[] { "label", "toolTip", "text" }.Where(name => item.TryGetProperty(name, out _)))
+						{
+							yield return item.GetProperty(name).GetString()!;
+						}
+
+						if (item.TryGetProperty("items", out JsonElement choices))
+						{
+							foreach (JsonElement choice in choices.EnumerateArray())
+							{
+								yield return choice.GetString()!;
+							}
+						}
+
+						if (item.TryGetProperty("properties", out JsonElement properties))
+						{
+							foreach (String name in textProperties.Where(name => properties.TryGetProperty(name, out _)))
+							{
+								yield return properties.GetProperty(name).GetString()!;
+							}
+						}
+					}
+				}
+			}
 		}
 
 		[Fact]
@@ -149,6 +200,8 @@ namespace SFallConfigurator.Tests
 					literals.Add(System.Net.WebUtility.HtmlDecode(match.Groups[1].Value));
 				}
 			}
+
+			literals.UnionWith(FindCatalogTexts());
 
 			List<String> unused = ReadDictionary("fr").Keys.Where(key => !literals.Contains(key)).ToList();
 

@@ -1,4 +1,6 @@
 <Solution>
+  <Project Path="SFallConfigurator.Core/SFallConfigurator.Core.csproj" />
+  <Project Path="SFallConfigurator.ViewModels/SFallConfigurator.ViewModels.csproj" />
   <Project Path="SFallConfigurator.Tests/SFallConfigurator.Tests.csproj" />
   <Project Path="SFallConfigurator/SFallConfigurator.csproj" />
 </Solution>

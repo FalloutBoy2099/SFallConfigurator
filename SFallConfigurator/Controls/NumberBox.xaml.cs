@@ -122,7 +122,7 @@ namespace SFallConfigurator.Controls
 			Step(-1);
 		}
 
-		private void OnEditorLostFocus(Object sender, RoutedEventArgs e)
+		private void OnEditorLostKeyboardFocus(Object sender, KeyboardFocusChangedEventArgs e)
 		{
 			CommitText();
 		}

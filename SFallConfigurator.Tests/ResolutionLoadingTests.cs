@@ -2,6 +2,7 @@ namespace SFallConfigurator.Tests
 {
 	using System;
 	using Configuration;
+	using Infrastructure;
 	using ViewModels;
 	using Xunit;
 
@@ -19,7 +20,7 @@ namespace SFallConfigurator.Tests
 
 		public void Dispose()
 		{
-			UserSettings.DirectoryOverride = null;
+			UserSettings.DirectoryOverride = TestEnvironment.SettingsFolder;
 			_settings.Dispose();
 		}
 
@@ -37,7 +38,7 @@ namespace SFallConfigurator.Tests
 			GameConfiguration configuration = new(folder.Path);
 			configuration.Load();
 
-			MainViewModel viewModel = new(configuration, new TestInteraction(), () => { }, _ => { }, _ => { });
+			MainViewModel viewModel = new(configuration, new AppServices(new TestInteraction()), new TestHost());
 			viewModel.Load();
 
 			Assert.False(configuration.HasPendingChanges);

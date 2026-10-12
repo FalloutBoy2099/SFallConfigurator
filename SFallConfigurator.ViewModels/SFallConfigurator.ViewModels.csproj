@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<!-- What the windows show and what the user can do: it has no reference to WPF, so that the compiler keeps it so. -->
+	<PropertyGroup>
+		<AssemblyName>SFallConfigurator.ViewModels</AssemblyName>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\SFallConfigurator.Core\SFallConfigurator.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Options\Catalog\*.json" LogicalName="SFallConfigurator.Options.Catalog.%(Filename)%(Extension)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="SFallConfigurator" />
+		<InternalsVisibleTo Include="SFallConfigurator.Tests" />
+	</ItemGroup>
+
+</Project>

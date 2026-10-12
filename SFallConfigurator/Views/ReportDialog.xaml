@@ -1,0 +1,71 @@
+﻿<Window
+    x:Class="SFallConfigurator.Views.ReportDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:loc="clr-namespace:SFallConfigurator.Localization"
+    Title="SFallConfigurator"
+    Width="560"
+    Height="420"
+    MinWidth="400"
+    MinHeight="240"
+    FontSize="12"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterOwner">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="Lines" Focusable="False">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="28" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                                x:Name="Glyph"
+                                VerticalAlignment="Top"
+                                FontFamily="{DynamicResource SymbolThemeFontFamily}"
+                                FontSize="14"
+                                Text="&#xE946;" />
+                            <TextBlock
+                                Grid.Column="1"
+                                Text="{Binding Text}"
+                                TextWrapping="Wrap" />
+                        </Grid>
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding Severity}" Value="Ok">
+                                <Setter TargetName="Glyph" Property="Text" Value="&#xE73E;" />
+                                <Setter TargetName="Glyph" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Severity}" Value="Warning">
+                                <Setter TargetName="Glyph" Property="Text" Value="&#xE7BA;" />
+                                <Setter TargetName="Glyph" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Severity}" Value="Error">
+                                <Setter TargetName="Glyph" Property="Text" Value="&#xEA39;" />
+                                <Setter TargetName="Glyph" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <Button
+            Grid.Row="1"
+            Width="90"
+            Margin="0,12,0,0"
+            HorizontalAlignment="Right"
+            Content="{loc:T 'Close'}"
+            IsCancel="True"
+            IsDefault="True"
+            Style="{DynamicResource AccentButtonStyle}" />
+    </Grid>
+
+</Window>

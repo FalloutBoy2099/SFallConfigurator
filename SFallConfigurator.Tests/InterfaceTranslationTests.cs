@@ -26,7 +26,7 @@ namespace SFallConfigurator.Tests
 		public void Dispose()
 		{
 			Localizer.Instance.Apply("en");
-			UserSettings.DirectoryOverride = null;
+			UserSettings.DirectoryOverride = TestEnvironment.SettingsFolder;
 			_settings.Dispose();
 		}
 
@@ -47,7 +47,7 @@ namespace SFallConfigurator.Tests
 
 				GameConfiguration configuration = new(game.Path);
 				configuration.Load();
-				MainViewModel viewModel = new(configuration, new TestInteraction(), () => { }, _ => { }, _ => { });
+				MainViewModel viewModel = new(configuration, new AppServices(new TestInteraction()), new TestHost());
 				viewModel.Load();
 				Visit(viewModel, new HashSet<Object>(ReferenceEqualityComparer.Instance), 0);
 

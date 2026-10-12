@@ -80,7 +80,7 @@
             IsEnabled="{Binding IsAvailable}"
             ItemTemplate="{StaticResource PageHeaderTemplate}"
             ItemsSource="{Binding Pages}"
-            SelectedIndex="0" />
+            SelectedItem="{Binding SelectedPage}" />
 
         <StackPanel
             Grid.Row="2"

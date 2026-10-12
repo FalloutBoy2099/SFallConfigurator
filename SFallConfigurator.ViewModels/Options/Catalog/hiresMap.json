@@ -1,0 +1,77 @@
+{
+  "id": "hiresMap",
+  "title": "Map",
+  "groups": [
+    {
+      "title": "Path finding",
+      "items": [
+        {
+          "type": "number",
+          "id": "pathNodes",
+          "source": "hires",
+          "section": "MAPS",
+          "key": "NumPathNodes",
+          "label": "Number Path Nodes:",
+          "minimum": 1,
+          "maximum": 20,
+          "properties": {
+            "defaultValue": "1",
+            "presentation": "Slider"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Map scrolling",
+      "items": [
+        {
+          "type": "bool",
+          "id": "ignorePlayerScrollLimits",
+          "source": "hires",
+          "section": "MAPS",
+          "key": "IGNORE_PLAYER_SCROLL_LIMITS",
+          "label": "IGNORE_PLAYER_SCROLL_LIMITS",
+          "toolTip": "Ignores the map scrolling limits around the player.",
+          "properties": {
+            "defaultValue": "0"
+          }
+        },
+        {
+          "type": "bool",
+          "id": "edgeClipping",
+          "source": "hires",
+          "section": "MAPS",
+          "key": "EDGE_CLIPPING_ON",
+          "label": "EDGE_CLIPPING_ON",
+          "properties": {
+            "defaultValue": "1"
+          }
+        },
+        {
+          "type": "bool",
+          "id": "vanillaMapBlockers",
+          "source": "hires",
+          "section": "MAPS",
+          "key": "IGNORE_MAP_EDGES",
+          "label": "VANILLA_MAP_BLOCKERS",
+          "properties": {
+            "trueValue": "2",
+            "defaultValue": "2"
+          }
+        },
+        {
+          "type": "bool",
+          "id": "fogOfWar",
+          "source": "hires",
+          "section": "MAPS",
+          "key": "FOG_OF_WAR",
+          "label": "FOG_OF_WAR",
+          "toolTip": "Enables the fog of war mod.",
+          "properties": {
+            "defaultValue": "0"
+          }
+        }
+      ]
+    }
+  ]
+}

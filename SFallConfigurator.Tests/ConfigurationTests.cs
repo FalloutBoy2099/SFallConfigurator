@@ -30,6 +30,8 @@ namespace SFallConfigurator.Tests
 			Assert.Equal("english", configuration.GameCfgSource.Read("system", "language"));
 			Assert.False(configuration.HasPendingChanges);
 
+			// The file is old: a rewrite within the same tick as its creation could not be seen.
+			File.SetLastWriteTimeUtc(folder.Combine("ddraw.ini"), DateTime.UtcNow.AddDays(-1));
 			DateTime before = File.GetLastWriteTimeUtc(folder.Combine("ddraw.ini"));
 			configuration.Save();
 			Assert.Equal(before, File.GetLastWriteTimeUtc(folder.Combine("ddraw.ini")));
@@ -300,6 +302,7 @@ namespace SFallConfigurator.Tests
 		{
 			using TestFolder folder = CreateFolder();
 			String path = folder.Write("mods/mods_order.ini", "beta.dat=1\r\n");
+			File.SetLastWriteTimeUtc(path, DateTime.UtcNow.AddDays(-1));
 			DateTime before = File.GetLastWriteTimeUtc(path);
 
 			ModsManager manager = new(folder.Path);

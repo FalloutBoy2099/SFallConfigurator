@@ -27,7 +27,7 @@ namespace SFallConfigurator.Tests
 
 		public void Dispose()
 		{
-			UserSettings.DirectoryOverride = null;
+			UserSettings.DirectoryOverride = TestEnvironment.SettingsFolder;
 			_settings.Dispose();
 		}
 
@@ -35,7 +35,7 @@ namespace SFallConfigurator.Tests
 		{
 			GameConfiguration configuration = new(folder.Path);
 			configuration.Load();
-			MainViewModel viewModel = new(configuration, interaction, () => { }, _ => { }, _ => { });
+			MainViewModel viewModel = new(configuration, new AppServices(interaction), new TestHost());
 			viewModel.Load();
 			return viewModel;
 		}
@@ -97,10 +97,10 @@ namespace SFallConfigurator.Tests
 		}
 
 		[Theory]
-		[InlineData(true, true, 1)]
-		[InlineData(false, true, 1)]
-		[InlineData(null, false, 1)]
-		public void ClosingAsksWhatToDoWithTheChanges(Boolean? answer, Boolean closes, Int32 questions)
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		[InlineData(null, false)]
+		public void ClosingAsksWhatToDoWithTheChanges(Boolean? answer, Boolean closes)
 		{
 			using TestFolder folder = CreateGame();
 			TestInteraction interaction = new()
@@ -111,7 +111,7 @@ namespace SFallConfigurator.Tests
 			Boolean result = viewModel.ConfirmClose();
 
 			Assert.Equal(closes, result);
-			Assert.Equal(questions, interaction.Questions);
+			Assert.Equal(1, interaction.Questions);
 			Boolean saved = File.ReadAllLines(folder.Combine("fallout2.cfg")).Contains("language=french");
 			Assert.Equal(answer == true, saved);
 		}
@@ -308,21 +308,11 @@ namespace SFallConfigurator.Tests
 
 		// --- Executable ---
 
-		private static String CreateExecutable(TestFolder folder)
-		{
-			Byte[] image = new Byte[1100000];
-			Encoding.ASCII.GetBytes("GNW95MUTEX").CopyTo(image, 1040600);
-			Encoding.ASCII.GetBytes("DDRAW").CopyTo(image, 0x000FE150);
-			String path = folder.Combine("fallout2.exe");
-			File.WriteAllBytes(path, image);
-			return path;
-		}
-
 		[Fact]
 		public void TheOriginalExecutableIsKeptBeforeItIsPatchedForTheFirstTime()
 		{
 			using TestFolder folder = new();
-			String exe = CreateExecutable(folder);
+			String exe = TestExecutable.Create(folder);
 			Byte[] original = File.ReadAllBytes(exe);
 
 			Assert.True(ExePatcher.SetSfallDll(exe, enable: true));
@@ -336,7 +326,7 @@ namespace SFallConfigurator.Tests
 		public void TheCopyOfTheOriginalIsNotReplacedByALaterPatchedState()
 		{
 			using TestFolder folder = new();
-			String exe = CreateExecutable(folder);
+			String exe = TestExecutable.Create(folder);
 			Byte[] original = File.ReadAllBytes(exe);
 			Assert.True(ExePatcher.SetSfallDll(exe, enable: true));
 
@@ -350,7 +340,7 @@ namespace SFallConfigurator.Tests
 		public void AnExecutableThatCannotBeWrittenIsLeftAsItWas()
 		{
 			using TestFolder folder = new();
-			String exe = CreateExecutable(folder);
+			String exe = TestExecutable.Create(folder);
 			Byte[] original = File.ReadAllBytes(exe);
 			File.SetAttributes(exe, FileAttributes.ReadOnly);
 			try

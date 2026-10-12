@@ -1,0 +1,105 @@
+{
+  "id": "settings",
+  "title": "Settings",
+  "groups": [
+    {
+      "title": "Game Config",
+      "items": [
+        {
+          "type": "path",
+          "id": "masterDat",
+          "source": "gameCfg",
+          "section": "system",
+          "key": "master_dat",
+          "label": "master_dat:",
+          "toolTip": "Path to the file or folder of Master.dat",
+          "kind": "FileOrFolder",
+          "properties": {
+            "fileFilter": "Dat files|*.dat"
+          }
+        },
+        {
+          "type": "path",
+          "id": "masterPatches",
+          "source": "gameCfg",
+          "section": "system",
+          "key": "master_patches",
+          "label": "master_patches:",
+          "toolTip": "Path to the Master patch folder.",
+          "kind": "FileOrFolder",
+          "properties": {
+            "fileFilter": "Dat files|*.dat"
+          }
+        },
+        {
+          "type": "path",
+          "id": "critterDat",
+          "source": "gameCfg",
+          "section": "system",
+          "key": "critter_dat",
+          "label": "critter_dat:",
+          "toolTip": "Path to the file or folder of Critter.dat",
+          "kind": "FileOrFolder",
+          "properties": {
+            "fileFilter": "Dat files|*.dat"
+          }
+        },
+        {
+          "type": "path",
+          "id": "critterPatches",
+          "source": "gameCfg",
+          "section": "system",
+          "key": "critter_patches",
+          "label": "critter_patches:",
+          "toolTip": "Path to the Critter patch folder.",
+          "kind": "FileOrFolder",
+          "properties": {
+            "fileFilter": "Dat files|*.dat"
+          }
+        },
+        {
+          "type": "path",
+          "id": "musicPath1",
+          "source": "gameCfg",
+          "section": "sound",
+          "key": "music_path1",
+          "label": "music_path1:",
+          "toolTip": "Path to the music folder.",
+          "kind": "Folder",
+          "properties": {
+            "fileFilter": "Dat files|*.dat",
+            "trailingSeparator": true
+          }
+        },
+        {
+          "type": "path",
+          "id": "musicPath2",
+          "source": "gameCfg",
+          "section": "sound",
+          "key": "music_path2",
+          "label": "music_path2:",
+          "toolTip": "Path to the music folder.",
+          "kind": "Folder",
+          "properties": {
+            "fileFilter": "Dat files|*.dat",
+            "trailingSeparator": true
+          }
+        }
+      ]
+    },
+    {
+      "items": [
+        {
+          "type": "text",
+          "id": "language",
+          "source": "gameCfg",
+          "section": "system",
+          "key": "language",
+          "label": "Game Language:",
+          "toolTip": "Language of the game.",
+          "hidden": true
+        }
+      ]
+    }
+  ]
+}

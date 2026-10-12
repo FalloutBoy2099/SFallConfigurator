@@ -13,7 +13,7 @@ namespace SFallConfigurator.Tests
 		/// <summary>
 		/// Builds a small Fallout 2 DAT with the given (name, content, compressed) files.
 		/// </summary>
-		private static void WriteDat(String path, params (String Name, Byte[] Data, Boolean Compress)[] files)
+		internal static void WriteDat(String path, params (String Name, Byte[] Data, Boolean Compress)[] files)
 		{
 			using FileStream stream = File.Create(path);
 			using BinaryWriter writer = new(stream, Encoding.Latin1);

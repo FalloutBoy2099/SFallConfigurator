@@ -1,0 +1,24 @@
+{
+  "id": "mods",
+  "title": "Mods",
+  "groups": [
+    {
+      "items": [
+        {
+          "type": "bool",
+          "id": "disableAutoloading",
+          "source": "sfall",
+          "key": "AutoloadingMods",
+          "addToSection": "ExtraPatches",
+          "label": "Disable Autoloading Mods",
+          "toolTip": "Disables the automatic loading of the mods that are not in the list.",
+          "properties": {
+            "trueValue": "0",
+            "falseValue": "1"
+          },
+          "hidden": true
+        }
+      ]
+    }
+  ]
+}

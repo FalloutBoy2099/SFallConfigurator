@@ -1,0 +1,272 @@
+{
+  "id": "combat",
+  "title": "Combat",
+  "groups": [
+    {
+      "title": "Combat",
+      "items": [
+        {
+          "type": "choice",
+          "id": "saveInCombat",
+          "source": "sfall",
+          "key": "SaveInCombatFix",
+          "addToSection": "Misc",
+          "label": "Save In Combat Mode",
+          "items": [
+            "Allow Saving (default)",
+            "Save only when full AP (recommended)",
+            "Block All Saving"
+          ]
+        },
+        {
+          "type": "choice",
+          "id": "controlCombat",
+          "source": "sfallMods",
+          "section": "CombatControl",
+          "key": "Mode",
+          "label": "Party Combat Control Mod",
+          "toolTip": "Lets you directly control every party member in combat.",
+          "items": [
+            "0 - Disable",
+            "1 - Direct Control mode (only Human)",
+            "2 - Direct Control mode (all)",
+            "3 - Order Attack mode"
+          ]
+        },
+        {
+          "type": "key",
+          "id": "toggleCombatKey",
+          "source": "sfallMods",
+          "section": "CombatControl",
+          "key": "Key",
+          "label": "Toggle Control Key :",
+          "defaultCode": 0
+        },
+        {
+          "type": "key",
+          "id": "reloadWeaponKey",
+          "source": "sfall",
+          "key": "ReloadWeaponKey",
+          "addToSection": "Input",
+          "label": "Reload Weapon Key :",
+          "defaultCode": 17
+        },
+        {
+          "type": "choice",
+          "id": "fastShot",
+          "source": "sfall",
+          "key": "FastShotFix",
+          "addToSection": "Misc",
+          "label": "Fast Shot Trait",
+          "toolTip": "Alternative behaviors for hand-to-hand attacks and the \"Fast Shot\" trait.",
+          "items": [
+            "Fallout 2 behaviour",
+            "Aimed shots are allowed for melee and HtH attacks",
+            "Alternative behaviour: -1 AP for all attacks",
+            "Fallout 1 behaviour: -1 AP for all weapons"
+          ]
+        },
+        {
+          "type": "choice",
+          "id": "burstFriendlyFire",
+          "source": "sfall",
+          "key": "CheckBurstFriendlyFire",
+          "addToSection": "CombatAI",
+          "label": "Check Burst Friendly Fire Mode:",
+          "toolTip": "0 - Prevents a burst with a probability of INT*10% of the attacking NPC.\n1 - Always prevents the attack when a friendly NPC is on the direct line of fire.\n2 - Increases the number of checks before an attack; the number of checks is based\n     on the INT*16 of the attacking NPC (by default the game makes only one check).\n3 - Enables modes 1 and 2: mode 1 plus extra checks for the adjacent lines of fire.\n-1 - Completely disables this feature of sfall.",
+          "items": [
+            "0: Random",
+            "1: Block",
+            "2: More Check",
+            "3: Combo Mode",
+            "-1: Disable Check"
+          ],
+          "properties": {
+            "values": [
+              "0",
+              "1",
+              "2",
+              "3",
+              "-1"
+            ]
+          }
+        },
+        {
+          "type": "number",
+          "id": "npcSpendExtraAp",
+          "source": "sfall",
+          "key": "NPCsTryToSpendExtraAP",
+          "addToSection": "CombatAI|Misc",
+          "default": "0",
+          "label": "NPC Try To Spend AP",
+          "toolTip": "Number of AP. 0 to disable.",
+          "minimum": 0,
+          "maximum": 10
+        },
+        {
+          "type": "bool",
+          "id": "punchKnockback",
+          "source": "sfall",
+          "key": "DisablePunchKnockback",
+          "addToSection": "Misc",
+          "default": "0",
+          "label": "Disable Punch Knockback"
+        },
+        {
+          "type": "bool",
+          "id": "autoMoveToAttack",
+          "source": "sfall",
+          "key": "AutoMoveToAttack",
+          "addToSection": "Misc",
+          "label": "Auto Move To Attack"
+        },
+        {
+          "type": "bool",
+          "id": "computeSpray",
+          "source": "sfall",
+          "key": "ComputeSprayMod",
+          "addToSection": "Misc",
+          "default": "0",
+          "label": "Compute Spray Mod",
+          "toolTip": "Enables an alternative spray formula for the flight of bullets in burst fire.\nThe formula is based on the weapon skill level of your character (or of a party member):\nthe higher the skill (above 100%), the more bullets land in the central group,\nand with a low skill you get a PENALTY and more bullets are spread\nover the adjacent lines of the spray.",
+          "properties": {
+            "trueValue": "2"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Damage formula",
+      "items": [
+        {
+          "type": "choice",
+          "id": "damageFormula",
+          "source": "sfall",
+          "key": "DamageFormula",
+          "addToSection": "Misc",
+          "label": "Damage Formula Mod",
+          "toolTip": "Damage formula (used to calculate damage in various mods).",
+          "items": [
+            "Fallout default",
+            "Glovz's Damage Fix",
+            "Glovz's Damage Fix with Damage Multiplier",
+            "Jim's Formula (only Sfall v3.3 - v3.6)",
+            "Haenlomal's Yet Another Ammo Mod"
+          ],
+          "properties": {
+            "values": [
+              "0",
+              "1",
+              "2",
+              "4",
+              "5"
+            ]
+          }
+        },
+        {
+          "type": "text",
+          "id": "ammoFile",
+          "source": "sfallModsAdd",
+          "section": "Misc",
+          "key": "AmmoFile",
+          "label": "Ammo File",
+          "properties": {
+            "defaultValue": ""
+          }
+        }
+      ]
+    },
+    {
+      "title": "Mods",
+      "items": [
+        {
+          "type": "bool",
+          "id": "combatKeyMod",
+          "source": "sfallMods",
+          "section": "Misc",
+          "key": "CombatKeyMod",
+          "label": "Combat Key Mod"
+        },
+        {
+          "type": "bool",
+          "id": "grenadeThrowing",
+          "source": "sfallMods",
+          "section": "Misc",
+          "key": "GrenadeThrowing",
+          "label": "Grenade Throwing Mod"
+        },
+        {
+          "type": "bool",
+          "id": "accuracyMod",
+          "source": "sfallMods",
+          "section": "Misc",
+          "key": "AccuracyMod",
+          "label": "Accuracy Mod"
+        },
+        {
+          "type": "bool",
+          "id": "dropItemsOnDeath",
+          "source": "sfallMods",
+          "section": "Inventory",
+          "key": "DropItemsOnDeath",
+          "label": "Drop Items On Death"
+        }
+      ]
+    },
+    {
+      "title": "Improve Combat",
+      "items": [
+        {
+          "type": "bool",
+          "id": "smartBehavior",
+          "source": "sfall",
+          "key": "SmartBehavior",
+          "addToSection": "CombatAI",
+          "default": "0",
+          "label": "AI Smart Behavior",
+          "toolTip": "Enables improved AI behavior algorithms in combat."
+        },
+        {
+          "type": "bool",
+          "id": "tryFindTarget",
+          "source": "sfall",
+          "key": "TryToFindTargets",
+          "addToSection": "CombatAI",
+          "label": "Try Find New Target"
+        },
+        {
+          "type": "bool",
+          "id": "takeBetterWeapons",
+          "source": "sfall",
+          "key": "TakeBetterWeapons",
+          "addToSection": "CombatAI",
+          "label": "Take Better Weapons"
+        },
+        {
+          "type": "bool",
+          "id": "lootingCorpses",
+          "source": "sfall",
+          "key": "LootingCorpses",
+          "addToSection": "CombatAI",
+          "label": "Looting Corpses"
+        },
+        {
+          "type": "bool",
+          "id": "npcPushOnMoveBlock",
+          "source": "sfall",
+          "key": "NPCPushOnMoveBlock",
+          "addToSection": "CombatAI",
+          "label": "Push On Move"
+        },
+        {
+          "type": "bool",
+          "id": "hidingTactics",
+          "source": "sfall",
+          "key": "HidingTactics",
+          "addToSection": "CombatAI",
+          "label": "Hiding Tactics"
+        }
+      ]
+    }
+  ]
+}

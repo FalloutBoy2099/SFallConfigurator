@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:loc="clr-namespace:SFallConfigurator.Localization"
     DataContextChanged="OnDataContextChanged">
-	
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -15,7 +15,7 @@
             x:Name="Pages"
             ItemTemplate="{StaticResource PageHeaderTemplate}"
             ItemsSource="{Binding Pages}"
-            SelectedIndex="0" />
+            SelectedItem="{Binding SelectedPage}" />
 
         <StackPanel
             Grid.Row="1"
@@ -47,5 +47,5 @@
                 ToolTip="{loc:T 'Saves the current settings and opens sfall-mods.ini.'}" />
         </StackPanel>
     </Grid>
-	
+
 </UserControl>

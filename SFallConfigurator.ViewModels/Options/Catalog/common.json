@@ -1,0 +1,238 @@
+{
+  "id": "common",
+  "title": "Common",
+  "groups": [
+    {
+      "title": "Highlight Mod",
+      "items": [
+        {
+          "type": "key",
+          "id": "highlightKey",
+          "source": "sfallMods",
+          "section": "Highlighting",
+          "key": "Key",
+          "label": "Highlights Item Key :",
+          "toolTip": "Highlights the items on the map while the key is held (Shift by default).",
+          "defaultCode": 42
+        },
+        {
+          "type": "bool",
+          "id": "highlightContainers",
+          "source": "sfallMods",
+          "section": "Highlighting",
+          "key": "Containers",
+          "label": "Highlight Containers"
+        },
+        {
+          "type": "bool",
+          "id": "highlightCorpses",
+          "source": "sfallMods",
+          "section": "Highlighting",
+          "key": "Corpses",
+          "label": "Highlight Corpses",
+          "properties": {
+            "trueValue": "2"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Quick Save Behavior",
+      "items": [
+        {
+          "type": "bool",
+          "id": "extraSaveSlots",
+          "source": "sfall",
+          "key": "ExtraSaveSlots",
+          "addToSection": "Misc",
+          "default": "0",
+          "label": "Enable extra save slots"
+        },
+        {
+          "type": "number",
+          "id": "startSavePage",
+          "source": "sfall",
+          "key": "AutoQuickSavePage",
+          "addToSection": "Misc",
+          "label": "Start Save Page:",
+          "minimum": -1,
+          "maximum": 999
+        },
+        {
+          "type": "number",
+          "id": "quickSavePages",
+          "source": "sfall",
+          "key": "AutoQuickSave",
+          "addToSection": "Misc",
+          "default": "0",
+          "label": "Count Pages/Slots:",
+          "toolTip": "A value (1..999) sets the number of pages used for quick saves.\n0 to disable.\n\nIf Start Save Page is set to -1, this sets the number of slots per page for quick saves.\n",
+          "minimum": 0,
+          "maximum": 999
+        }
+      ]
+    },
+    {
+      "title": "Auto Save",
+      "items": [
+        {
+          "type": "bool",
+          "id": "autoSave",
+          "source": "sfallMods",
+          "section": "Misc",
+          "key": "AutoSave",
+          "label": "Enable Auto Save Mod"
+        },
+        {
+          "type": "number",
+          "id": "autoSavePage",
+          "source": "sfallMods",
+          "section": "Misc",
+          "key": "AutoSavePage",
+          "label": "Auto Save Page",
+          "toolTip": "Allowed range: 0...999",
+          "minimum": 0,
+          "maximum": 999
+        },
+        {
+          "type": "number",
+          "id": "autoSaveCountPages",
+          "source": "sfallMods",
+          "section": "Misc",
+          "key": "AutoSaveCountPages",
+          "label": "Count Save Pages",
+          "toolTip": "Number of pages reserved for automatic saves.",
+          "minimum": 1,
+          "maximum": 100
+        },
+        {
+          "type": "number",
+          "id": "autoSaveTime",
+          "source": "sfallMods",
+          "section": "Misc",
+          "key": "AutoSaveTime",
+          "label": "Save After Time",
+          "toolTip": "Timeout in game seconds before the next automatic save.",
+          "minimum": 1,
+          "maximum": 999
+        }
+      ]
+    },
+    {
+      "title": "General",
+      "items": [
+        {
+          "type": "bool",
+          "id": "heroAppearance",
+          "source": "sfall",
+          "key": "EnableHeroAppearanceMod",
+          "addToSection": "Misc",
+          "default": "0",
+          "label": "Hero Appearance Mod",
+          "toolTip": "Enables the built-in hero appearance mod."
+        },
+        {
+          "type": "bool",
+          "id": "npcAutoLevel",
+          "source": "sfall",
+          "key": "NPCAutoLevel",
+          "addToSection": "Misc",
+          "default": "0",
+          "label": "NPC Auto Level"
+        },
+        {
+          "type": "bool",
+          "id": "displayKarma",
+          "source": "sfall",
+          "key": "DisplayKarmaChanges",
+          "addToSection": "Misc",
+          "default": "0",
+          "label": "Display Karma Changes",
+          "toolTip": "Reports changes of the player's karma in the information window of the game interface."
+        },
+        {
+          "type": "bool",
+          "id": "dontTurnOffSneak",
+          "source": "sfall",
+          "key": "DontTurnOffSneakIfYouRun",
+          "addToSection": "Misc",
+          "default": "0",
+          "label": "Don't Turn Off Sneak"
+        },
+        {
+          "type": "bool",
+          "id": "partySkills",
+          "source": "sfallMods",
+          "section": "PartyMember",
+          "key": "UsePartySkills",
+          "label": "Use Party Member Skills Mod"
+        },
+        {
+          "type": "bool",
+          "id": "autoOpenDoor",
+          "source": "sfallMods",
+          "section": "Misc",
+          "key": "AutoOpenDoor",
+          "label": "Auto Open Door",
+          "toolTip": "Automatically opens unlocked doors when walking through them."
+        },
+        {
+          "type": "bool",
+          "id": "autoCloseDoor",
+          "source": "sfallMods",
+          "section": "Misc",
+          "key": "AutoCloseDoor",
+          "label": "NPC Auto Close Door",
+          "toolTip": "Automatically closes the doors that NPCs open when they pass through them."
+        },
+        {
+          "type": "bool",
+          "id": "radIcon",
+          "source": "sfallMods",
+          "section": "GameFX",
+          "key": "ShowRadsIcon",
+          "label": "Show RAD Warning Icon"
+        },
+        {
+          "type": "choice",
+          "id": "showInfoWindow",
+          "source": "sfallMods",
+          "section": "Misc",
+          "key": "ShowInfoWindow",
+          "label": "Show Information Window",
+          "items": [
+            "0 - Disable",
+            "1 - Enable (short delay time)",
+            "2 - Enable (long delay time)"
+          ]
+        },
+        {
+          "type": "number",
+          "id": "timeLimit",
+          "source": "sfall",
+          "key": "TimeLimit",
+          "addToSection": "Misc",
+          "label": "Game Years Limit:",
+          "toolTip": "Time limit of the game in years.",
+          "minimum": -3,
+          "maximum": 100
+        },
+        {
+          "type": "number",
+          "id": "gameSpeed",
+          "source": "sfall",
+          "key": "SpeedMultiInitial",
+          "addToSection": "Speed",
+          "default": "100",
+          "label": "Game Speed %:",
+          "toolTip": "Minimum 10%, maximum 1000%.",
+          "minimum": 10,
+          "maximum": 1000,
+          "properties": {
+            "increment": 10
+          }
+        }
+      ]
+    }
+  ]
+}

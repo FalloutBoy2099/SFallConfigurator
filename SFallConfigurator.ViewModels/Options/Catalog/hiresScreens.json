@@ -1,0 +1,191 @@
+{
+  "id": "hiresScreens",
+  "title": "Screens",
+  "groups": [
+    {
+      "title": "Screen sizes",
+      "items": [
+        {
+          "type": "choice",
+          "id": "splash",
+          "source": "hires",
+          "section": "STATIC_SCREENS",
+          "key": "SPLASH_SCRN_SIZE",
+          "label": "Splash Screen Size:",
+          "items": [
+            "0 - Original size",
+            "1 - Stretch to fit screen (aspect ratio)",
+            "2 - Stretch to fill screen"
+          ],
+          "properties": {
+            "defaultValue": "1"
+          }
+        },
+        {
+          "type": "choice",
+          "id": "movies",
+          "source": "hires",
+          "section": "MOVIES",
+          "key": "MOVIE_SIZE",
+          "label": "Movies Size:",
+          "items": [
+            "0 - Original size",
+            "1 - Stretch to fit screen (aspect ratio)",
+            "2 - Stretch to fill screen"
+          ],
+          "properties": {
+            "defaultValue": "1"
+          }
+        },
+        {
+          "type": "choice",
+          "id": "death",
+          "source": "hires",
+          "section": "STATIC_SCREENS",
+          "key": "DEATH_SCRN_SIZE",
+          "label": "Death Screen Size:",
+          "items": [
+            "0 - Original size",
+            "1 - Stretch to fit screen (aspect ratio)",
+            "2 - Stretch to fill screen"
+          ],
+          "properties": {
+            "defaultValue": "1"
+          }
+        },
+        {
+          "type": "choice",
+          "id": "endSlides",
+          "source": "hires",
+          "section": "STATIC_SCREENS",
+          "key": "END_SLIDE_SIZE",
+          "label": "End slides size:",
+          "items": [
+            "0 - Original size",
+            "1 - Stretch to fit screen (aspect ratio)",
+            "2 - Stretch to fill screen"
+          ],
+          "properties": {
+            "defaultValue": "1"
+          }
+        },
+        {
+          "type": "choice",
+          "id": "help",
+          "source": "hires",
+          "section": "STATIC_SCREENS",
+          "key": "HELP_SCRN_SIZE",
+          "label": "Help Screen Size:",
+          "items": [
+            "0 - Original size",
+            "1 - Stretch to fit screen (aspect ratio)",
+            "2 - Stretch to fill screen"
+          ],
+          "properties": {
+            "defaultValue": "0"
+          }
+        },
+        {
+          "type": "choice",
+          "id": "mainMenuSize",
+          "source": "hires",
+          "section": "MAINMENU",
+          "key": "MAIN_MENU_SIZE",
+          "label": "Mainmenu Screen Size:",
+          "items": [
+            "0 - Original size",
+            "1 - Stretch to fit screen (aspect ratio)",
+            "2 - Stretch to fill screen"
+          ],
+          "properties": {
+            "defaultValue": "1"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Main menu",
+      "items": [
+        {
+          "type": "bool",
+          "id": "useHiResImages",
+          "source": "hires",
+          "section": "MAINMENU",
+          "key": "USE_HIRES_IMAGES",
+          "label": "USE_HIRES_IMAGES",
+          "properties": {
+            "defaultValue": "1"
+          }
+        },
+        {
+          "type": "bool",
+          "id": "scaleButtons",
+          "source": "hires",
+          "section": "MAINMENU",
+          "key": "SCALE_BUTTONS_AND_TEXT_MENU",
+          "label": "SCALE_BUTTONS",
+          "properties": {
+            "defaultValue": "0"
+          }
+        },
+        {
+          "type": "number",
+          "id": "offsetX",
+          "source": "hires",
+          "section": "MAINMENU",
+          "key": "MENU_BG_OFFSET_X",
+          "label": "Menu Background Offset X:",
+          "minimum": -1000,
+          "maximum": 10000,
+          "properties": {
+            "defaultValue": "-14"
+          }
+        },
+        {
+          "type": "number",
+          "id": "offsetY",
+          "source": "hires",
+          "section": "MAINMENU",
+          "key": "MENU_BG_OFFSET_Y",
+          "label": "Menu Background Offset Y:",
+          "minimum": -1000,
+          "maximum": 10000,
+          "properties": {
+            "defaultValue": "-4"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Other",
+      "items": [
+        {
+          "type": "bool",
+          "id": "dialogBackground",
+          "source": "hires",
+          "section": "OTHER_SETTINGS",
+          "key": "DIALOG_SCRN_BACKGROUND",
+          "label": "DIALOG_SCRN_BACKGROUND",
+          "toolTip": "The map and the player's interface bar are hidden during a dialogue with an NPC.",
+          "properties": {
+            "defaultValue": "0"
+          }
+        },
+        {
+          "type": "number",
+          "id": "splashTime",
+          "source": "hires",
+          "section": "OTHER_SETTINGS",
+          "key": "SPLASH_SCRN_TIME",
+          "label": "SPLASH_SCRN_TIME:",
+          "toolTip": "Increases the display time of the start picture, in seconds.",
+          "minimum": 0,
+          "maximum": 10,
+          "properties": {
+            "defaultValue": "1"
+          }
+        }
+      ]
+    }
+  ]
+}
