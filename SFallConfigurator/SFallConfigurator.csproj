@@ -18,6 +18,8 @@
 	<PropertyGroup>
 		<!-- The built-in Fluent theme (ThemeMode) is flagged as experimental in the WPF reference assemblies. -->
 		<NoWarn>$(NoWarn);WPF0001</NoWarn>
+		<AssemblyVersion>2026.10.12.2</AssemblyVersion>
+		<FileVersion>2026.10.12.2</FileVersion>
 	</PropertyGroup>
 
 	<ItemGroup>

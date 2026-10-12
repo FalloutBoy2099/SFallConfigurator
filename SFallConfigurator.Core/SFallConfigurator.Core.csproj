@@ -3,6 +3,8 @@
 	<!-- Files, archives, mods, patches and texts: nothing in this project knows a window. -->
 	<PropertyGroup>
 		<AssemblyName>SFallConfigurator.Core</AssemblyName>
+		<AssemblyVersion>2026.10.12.2</AssemblyVersion>
+		<FileVersion>2026.10.12.2</FileVersion>
 	</PropertyGroup>
 
 	<ItemGroup>

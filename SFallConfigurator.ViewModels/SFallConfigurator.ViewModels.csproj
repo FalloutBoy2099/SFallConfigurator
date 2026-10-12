@@ -3,6 +3,8 @@
 	<!-- What the windows show and what the user can do: it has no reference to WPF, so that the compiler keeps it so. -->
 	<PropertyGroup>
 		<AssemblyName>SFallConfigurator.ViewModels</AssemblyName>
+		<AssemblyVersion>2026.10.12.2</AssemblyVersion>
+		<FileVersion>2026.10.12.2</FileVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
