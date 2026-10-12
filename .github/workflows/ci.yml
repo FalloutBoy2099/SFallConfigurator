@@ -1,9 +1,20 @@
 name: CI
 
+# Every push and pull request is built and tested, and the two Windows x64 executables are kept as an artifact.
+# A tag "v*" (for example v2026.10.12) also publishes them as a GitHub release.
 on:
   push:
     branches: [main]
+    tags: ['v*']
   pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -27,10 +38,35 @@ jobs:
       - name: Test
         run: dotnet test SFallConfigurator.slnx --configuration Release --no-build
 
-      - name: Publish the two executables
-        run: pwsh -NoProfile -File Publish.ps1
+      # SFallConfigurator.exe needs the .NET 10 Desktop Runtime; SFallConfigurator-NET.exe has the runtime inside.
+      - name: Publish the two executables (win-x64)
+        run: pwsh -NoProfile -File Publish.ps1 -Runtime win-x64
 
       - uses: actions/upload-artifact@v4
         with:
-          name: SFallConfigurator
+          name: SFallConfigurator-win-x64
           path: publish/*.exe
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: SFallConfigurator-win-x64
+          path: publish
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          gh release create "${{ github.ref_name }}"
+          publish/SFallConfigurator.exe
+          publish/SFallConfigurator-NET.exe
+          --repo "${{ github.repository }}"
+          --title "SFallConfigurator ${{ github.ref_name }}"
+          --generate-notes
